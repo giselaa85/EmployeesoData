@@ -1,0 +1,33 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "logali-config1",
+      "type": "node",
+      "request": "launch",
+      "cwd": "${workspaceFolder}",
+      "runtimeExecutable": "npx",
+      "windows": {
+        "runtimeExecutable": "npx.cmd"
+      },
+      "runtimeArgs": [
+        "fiori",
+        "run"
+      ],
+      "args": [
+        "--open",
+        "index.html"
+      ],
+      "console": "internalConsole",
+      "internalConsoleOptions": "openOnSessionStart",
+      "outputCapture": "std",
+      "env": {
+        "run.config": "{\"handlerId\":\"fiori_tools\",\"runnableId\":\"/home/user/projects/sapui5_logali/typescript/logali\"}",
+        "FIORI_TOOLS_BACKEND_CONFIG": "[{\"destination\":\"Northwind\",\"url\":\"https://services.odata.org\",\"path\":\"/v3\"}]",
+        "FIORI_TOOLS_URL_PARAMS": "sap-ui-xx-viewCache=false",
+        "FIORI_TOOLS_UI5_VERSION": "1.132.1",
+        "FIORI_TOOLS_UI5_URI": "https://ui5.sap.com"
+      }
+    }
+  ]
+}
