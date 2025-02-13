@@ -10,12 +10,15 @@ import Table from "sap/m/Table";
 import Filter from "sap/ui/model/Filter";
 import FilterOperator from "sap/ui/model/FilterOperator";
 import ListBinding from "sap/ui/model/ListBinding";
+import CountryFormatter from "../model/CountryFormatter";
  
 
 /**
  * @namespace logaligroup.logali.controller
  */
 export default class MainView extends Controller {
+   
+   public formatter = CountryFormatter;
 
    /*eslint-disable @typescript-eslint/no-empty-function*/
    public onInit(): void {

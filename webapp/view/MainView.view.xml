@@ -108,7 +108,13 @@
                             <Text
                                 text="{employee>LastName}, {employee>FirstName}"
                             />
-                            <Text text="{employee>Country}" />
+                            <!-- <Text text="{employee>Country}" /> -->
+                            <Text
+                                text="{
+                                        path: 'employee>Country',
+                                        formatter: '.formatter.countryName'
+                                     }"
+                            />
                             <Text text="{employee>City}" />
                         </cells>
                     </ColumnListItem>
