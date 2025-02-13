@@ -11,7 +11,10 @@ import Filter from "sap/ui/model/Filter";
 import FilterOperator from "sap/ui/model/FilterOperator";
 import ListBinding from "sap/ui/model/ListBinding";
 import CountryFormatter from "../model/CountryFormatter";
- 
+import MessageToast from "sap/m/MessageToast";
+import Event from "sap/ui/base/Event";
+import ColumnListItem from "sap/m/ColumnListItem";
+import Context from "sap/ui/model/Context";
 
 /**
  * @namespace logaligroup.logali.controller
@@ -102,5 +105,15 @@ export default class MainView extends Controller {
       const oBinding = oTable.getBinding("items") as ListBinding;
       oBinding.filter(oFilter);
      
+   }
+
+   public onCellPress(oEvent:Event):void {
+      const oView: View = this.getView() as View;
+      const oSelectedItem2: ColumnListItem = oEvent.getParameter("listItem" as never) ;
+      const oContext:Context = oSelectedItem2.getBindingContext("employee") as Context ;
+      const sPath = oContext.getPath();
+      const oSelectedData = oView.getModel("employee")?.getProperty(sPath);  
+      debugger;
+      MessageToast.show(oSelectedData.EmployeeID + ": " + oSelectedData.PostalCode);
    }
 }

@@ -82,7 +82,9 @@
 			sorter: {
 				path: 'EmployeeId'
 			}
-		}"
+		}" 
+        itemPress="onCellPress"
+        
             >
                 <columns>
                     <Column>
@@ -99,8 +101,8 @@
                     </Column>
                 </columns>
                 <items>
-                    <ColumnListItem vAlign="Middle">
-                        <cells>
+                    <ColumnListItem vAlign="Middle" type="Active">
+                        <cells >
                             <ObjectIdentifier
                                 title="{Name}"
                                 text="{employee>EmployeeID}"
