@@ -13,22 +13,22 @@
                 <Label
                     id="labelEmployee"
                     text="{i18n>labelEmployee}"
-                    class="sapUiSmallMargin"
+                    class="sapUiSmallMarginTop sapUiSmallMarginEnd"
                 />
                 <Input
                     id="inputEmployee"
                     maxLength="6"
                     width="200px"
-                    class="sapUiSmallMargin"
-                    liveChange="onValidation"
+                    class="sapUiSmallMarginEnd"
+                    value="{employee>/EmployeeID}"
                 />
                 <Label
                     id="labelCountry"
-                    visible="false"
                     text="{i18n>labelCountry}"
-                    class="sapUiSmallMargin"
+                    class="sapUiSmallMarginTop sapUiSmallMarginEnd"
                 />
-                <ComboBox
+                <!-- visible="false" -->
+                <!-- <ComboBox
                     id="comboCountry"
                     visible="false"
                     class="sapUiSmallMargin"
@@ -45,8 +45,75 @@
                         key="{i18n>keyES}"
                         text="{i18n>valueES}"
                     />
-                </ComboBox>
+                </ComboBox> -->
+                <Select
+                    id="comboCountry"
+                    class="sapUiSmallMarginEnd"
+                    forceSelection="false"
+                    selectedKey="{employee>/CountryKey}"
+                    items="{
+                path: 'employee>/ListCountry',
+                sorter: { path: 'text' }
+            }"
+                >
+                    <core:Item
+                        key="{employee>Key}"
+                        text="{employee>Text}"
+                    />
+                </Select>
+                <Button
+                    text="{i18n>filter}"
+                    icon="sap-icon://search"
+                    press="onFilter"
+                    class="sapUiSmallMarginEnd"
+                />
+                <Button
+                    text="{i18n>clearFilter}"
+                    icon="sap-icon://clear-filter"
+                    press="onClearFilter"
+                    class="sapUiSmallMarginEnd"
+                />
             </HBox>
+            <Table
+                id="idEmployeesTable"
+                inset="false"
+                items="{
+			path: 'employee>/Employees',
+			sorter: {
+				path: 'EmployeeId'
+			}
+		}"
+            >
+                <columns>
+                    <Column>
+                        <Text text="{i18n>colEmployeeId}" />
+                    </Column>
+                    <Column>
+                        <Text text="{i18n>colName}" />
+                    </Column>
+                    <Column>
+                        <Text text="{i18n>colCountry}" />
+                    </Column>
+                    <Column>
+                        <Text text="{i18n>colCity}" />
+                    </Column>
+                </columns>
+                <items>
+                    <ColumnListItem vAlign="Middle">
+                        <cells>
+                            <ObjectIdentifier
+                                title="{Name}"
+                                text="{employee>EmployeeID}"
+                            />
+                            <Text
+                                text="{employee>LastName}, {employee>FirstName}"
+                            />
+                            <Text text="{employee>Country}" />
+                            <Text text="{employee>City}" />
+                        </cells>
+                    </ColumnListItem>
+                </items>
+            </Table>
         </content>
     </Page>
 </mvc:View>
