@@ -8,7 +8,7 @@ import ListBinding from "sap/ui/model/ListBinding";
 const CountryFormatter = {
     countryName: function (this: Controller, sCountry: string): string {
         const oView: View = this.getView() as View;
-        const oModel : JSONModel = oView.getModel("employee") as JSONModel;
+        const oModel : JSONModel = oView.getModel("country") as JSONModel;
         const oCountries = oModel.getProperty("/ListCountry");
         // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/find
         // const inventory = [
@@ -17,6 +17,7 @@ const CountryFormatter = {
         //     { name: "cherries", quantity: 5 },
         //   ];          
         //   const result = inventory.find(({ name }) => name === "cherries");
+        debugger;
         return oCountries.find((country: { Key: string; }) => country.Key === sCountry).Text;
     }
 

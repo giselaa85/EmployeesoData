@@ -20,12 +20,11 @@ import Context from "sap/ui/model/Context";
  * @namespace logaligroup.logali.controller
  */
 export default class MainView extends Controller {
-   
+
    public formatter = CountryFormatter;
 
    /*eslint-disable @typescript-eslint/no-empty-function*/
    public onInit(): void {
-      const oJSONModel = new JSONModel;
       const oView: View = this.getView() as View;
       const oRBundle: ResourceBundle =
          <ResourceBundle>(
@@ -53,14 +52,30 @@ export default class MainView extends Controller {
       // };
       // oJSONModel.setData(oJSON);
       // oView.setModel(oJSONModel, "employee");
+      const oJSONModelEmployee = new JSONModel;
+      oJSONModelEmployee.loadData("./localService/mockdata/Employees.json");
+      oView.setModel(oJSONModelEmployee, "employee");
 
-      oJSONModel.loadData("./localService/mockdata/Employees.json");
-      oView.setModel(oJSONModel, "employee");
- 
+      const oJSONModelCountries = new JSONModel;
+      oJSONModelCountries.loadData("./localService/mockdata/Countries.json");
+      oView.setModel(oJSONModelCountries, "country");
+
+      const oJSONModelConfig = new JSONModel(
+         {
+            visibleID: true,
+            visibleName: true,
+            visibleCountry: true,
+            visibleCity: false,
+            visibleBtnShowCity: true,
+            visibleBtnHideCity: false
+         }
+      );
+      oView.setModel(oJSONModelConfig, "jsonModelConfig");
+
       // this.onValidation();
    }
 
-   public onValidation() : void {
+   public onValidation(): void {
       const oView: View = this.getView() as View;
       const oInput = this.getView()?.byId("inputEmployee") as Input;
       //    oInput.setDescription(oInput.getValue().length === 6 ? "OK": "Not OK");
@@ -82,38 +97,57 @@ export default class MainView extends Controller {
       const oBinding = oTable.getBinding("items") as ListBinding;
       // const oCombo = this.getView()?.byId("comboCountry") as Select;
       // const oInput = this.getView()?.byId("inputEmployee") as Input;
-      const oModel : JSONModel = oView.getModel("employee") as JSONModel;
- 
-      let oFilter : Filter[] = [];
-      if(oModel.getProperty("/CountryKey")){
-      // oFilter.push(new Filter("Country", FilterOperator.EQ, oCombo.getSelectedKey()));}
-      oFilter.push(new Filter("Country", FilterOperator.EQ, oModel.getProperty("/CountryKey")));}
-      if(oModel.getProperty("/EmployeeID")){
-      // oFilter.push(new Filter("EmployeeID", FilterOperator.EQ, oInput.getValue()));}
-      oFilter.push(new Filter("EmployeeID", FilterOperator.EQ, oModel.getProperty("/EmployeeID")));}
-      
-      oBinding.filter(oFilter);
+      const oModel: JSONModel = oView.getModel("country") as JSONModel;
+
+      let oFilter: Filter[] = [];
+      if (oModel.getProperty("/CountryKey")) {
+         // oFilter.push(new Filter("Country", FilterOperator.EQ, oCombo.getSelectedKey()));}
+         oFilter.push(new Filter("Country", FilterOperator.EQ, oModel.getProperty("/CountryKey")));
       }
+      if (oModel.getProperty("/EmployeeID")) {
+         // oFilter.push(new Filter("EmployeeID", FilterOperator.EQ, oInput.getValue()));}
+         oFilter.push(new Filter("EmployeeID", FilterOperator.EQ, oModel.getProperty("/EmployeeID")));
+      }
+
+      oBinding.filter(oFilter);
+   }
 
    public onClearFilter(): void {
       const oView: View = this.getView() as View;
-      const oModel : JSONModel = oView.getModel("employee") as JSONModel;
+      const oModel: JSONModel = oView.getModel("country") as JSONModel;
       oModel.setProperty("/EmployeeID", "");
       oModel.setProperty("/CountryKey", "");
-      let oFilter : Filter[] = [];
+      let oFilter: Filter[] = [];
       const oTable = oView.byId("idEmployeesTable") as Table;
       const oBinding = oTable.getBinding("items") as ListBinding;
       oBinding.filter(oFilter);
-     
+
    }
 
-   public onCellPress(oEvent:Event):void {
+   public onCellPress(oEvent: Event): void {
       const oView: View = this.getView() as View;
-      const oSelectedItem2: ColumnListItem = oEvent.getParameter("listItem" as never) ;
-      const oContext:Context = oSelectedItem2.getBindingContext("employee") as Context ;
+      const oSelectedItem2: ColumnListItem = oEvent.getParameter("listItem" as never);
+      const oContext: Context = oSelectedItem2.getBindingContext("employee") as Context;
       const sPath = oContext.getPath();
-      const oSelectedData = oView.getModel("employee")?.getProperty(sPath);  
+      const oSelectedData = oView.getModel("employee")?.getProperty(sPath);
       debugger;
       MessageToast.show(oSelectedData.EmployeeID + ": " + oSelectedData.PostalCode);
    }
+
+   public onShowCity(): void {
+      const oView: View = this.getView() as View;
+      const oModel: JSONModel = oView.getModel("jsonModelConfig") as JSONModel;
+      oModel.setProperty("/visibleCity", true);
+      oModel.setProperty("/visibleBtnShowCity", false);
+      oModel.setProperty("/visibleBtnHideCity", true);
+   }
+
+   public onHideCity(): void {
+      const oView: View = this.getView() as View;
+      const oModel: JSONModel = oView.getModel("jsonModelConfig") as JSONModel;
+      oModel.setProperty("/visibleCity", false);
+      oModel.setProperty("/visibleBtnShowCity", true);
+      oModel.setProperty("/visibleBtnHideCity", false);
+   }
+
 }

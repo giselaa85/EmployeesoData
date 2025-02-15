@@ -20,7 +20,7 @@
                     maxLength="6"
                     width="200px"
                     class="sapUiSmallMarginEnd"
-                    value="{employee>/EmployeeID}"
+                    value="{country>/EmployeeID}"
                 />
                 <Label
                     id="labelCountry"
@@ -50,15 +50,15 @@
                     id="comboCountry"
                     class="sapUiSmallMarginEnd"
                     forceSelection="false"
-                    selectedKey="{employee>/CountryKey}"
+                    selectedKey="{country>/CountryKey}"
                     items="{
-                path: 'employee>/ListCountry',
+                path: 'country>/ListCountry',
                 sorter: { path: 'text' }
             }"
                 >
                     <core:Item
-                        key="{employee>Key}"
-                        text="{employee>Text}"
+                        key="{country>Key}"
+                        text="{country>Text}"
                     />
                 </Select>
                 <Button
@@ -74,6 +74,20 @@
                     class="sapUiSmallMarginEnd"
                 />
             </HBox>
+            <Button
+                id="btnShowCity"
+                text="{i18n>showCity}"
+                visible="{jsonModelConfig>/visibleBtnShowCity}"
+                press="onShowCity"
+                class="sapUiSmallMarginEnd"
+            />
+            <Button
+                id="btnHideCity"
+                text="{i18n>hideCity}"
+                visible="{jsonModelConfig>/visibleBtnHideCity}"
+                press="onHideCity"
+                class="sapUiSmallMarginEnd"
+            />
             <Table
                 id="idEmployeesTable"
                 inset="false"
@@ -82,27 +96,38 @@
 			sorter: {
 				path: 'EmployeeId'
 			}
-		}" 
-        itemPress="onCellPress"
-        
+		}"
+                itemPress="onCellPress"
             >
                 <columns>
                     <Column>
-                        <Text text="{i18n>colEmployeeId}" />
+                        <Text
+                            visible="{jsonModelConfig>/visibleID}"
+                            text="{i18n>colEmployeeId}"
+                        />
                     </Column>
                     <Column>
-                        <Text text="{i18n>colName}" />
+                        <Text
+                            visible="{jsonModelConfig>/visibleName}"
+                            text="{i18n>colName}"
+                        />
                     </Column>
                     <Column>
-                        <Text text="{i18n>colCountry}" />
+                        <Text
+                            visible="{jsonModelConfig>/visibleCountry}"
+                            text="{i18n>colCountry}"
+                        />
                     </Column>
-                    <Column>
+                    <Column visible="{jsonModelConfig>/visibleCity}">
                         <Text text="{i18n>colCity}" />
                     </Column>
                 </columns>
                 <items>
-                    <ColumnListItem vAlign="Middle" type="Active">
-                        <cells >
+                    <ColumnListItem
+                        vAlign="Middle"
+                        type="Active"
+                    >
+                        <cells>
                             <ObjectIdentifier
                                 title="{Name}"
                                 text="{employee>EmployeeID}"
@@ -110,13 +135,13 @@
                             <Text
                                 text="{employee>LastName}, {employee>FirstName}"
                             />
-                            <!-- <Text text="{employee>Country}" /> -->
-                            <Text
+                            <Text text="{employee>Country}" />
+                            <!-- <Text
                                 text="{
                                         path: 'employee>Country',
                                         formatter: '.formatter.countryName'
                                      }"
-                            />
+                            /> -->
                             <Text text="{employee>City}" />
                         </cells>
                     </ColumnListItem>
