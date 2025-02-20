@@ -3,12 +3,12 @@
     "CountryKey": "",
     "ListCountry": [
         {
-            "Key": "US",
+            "Key": "USA",
             "Text": "United States"
         },
         {
             "Key": "UK",
-            "Text": "United Kindom"
+            "Text": "United Kingdom"
         },
         {
             "Key": "ES",

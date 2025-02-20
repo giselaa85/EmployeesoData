@@ -1,0 +1,147 @@
+<core:FragmentDefinition
+    xmlns:form="sap.ui.layout.form"
+    xmlns="sap.m"
+    xmlns:core="sap.ui.core"
+>
+    <Panel>
+        <form:SimpleForm
+            width="auto"
+            layout="ResponsiveGridLayout"
+        >
+            <HBox wrap="Wrap">
+                <Label
+                    id="labelEmployee"
+                    text="{i18n>labelEmployee}"
+                    class="sapUiSmallMarginTop sapUiSmallMarginEnd"
+                    labelFor="inputEmployee"
+                />
+                <Input
+                    id="inputEmployee"
+                    maxLength="6"
+                    width="200px"
+                    class="sapUiSmallMarginEnd"
+                    value="{country>/EmployeeID}"
+                />
+            </HBox>
+
+            <HBox wrap="Wrap">
+                <Label
+                    id="labelCountry"
+                    text="{i18n>labelCountry}"
+                    class="sapUiSmallMarginTop sapUiSmallMarginEnd"
+                    labelFor="comboCountry"
+                />
+
+                <Select
+                    id="comboCountry"
+                    class="sapUiSmallMarginEnd"
+                    forceSelection="false"
+                    selectedKey="{country>/CountryKey}"
+                    items="{
+                       path: 'country>/ListCountry',
+                       sorter: { path: 'text' }
+                        }"
+                >
+                    <core:Item
+                        key="{country>Key}"
+                        text="{country>Text}"
+                    />
+                </Select>
+            </HBox>
+            <HBox wrap="Wrap">
+                <Button
+                    text="{i18n>filter}"
+                    icon="sap-icon://search"
+                    press="onFilter"
+                    class="sapUiSmallMarginEnd"
+                />
+                <Button
+                    text="{i18n>clearFilter}"
+                    icon="sap-icon://clear-filter"
+                    press="onClearFilter"
+                    class="sapUiSmallMarginEnd"
+                />
+
+                <Button
+                    id="btnShowCity"
+                    text="{i18n>showCity}"
+                    visible="{jsonModelConfig>/visibleBtnShowCity}"
+                    press="onShowCity"
+                    class="sapUiSmallMarginEnd"
+                />
+
+                <Button
+                    id="btnHideCity"
+                    text="{i18n>hideCity}"
+                    visible="{jsonModelConfig>/visibleBtnHideCity}"
+                    press="onHideCity"
+                    class="sapUiSmallMarginEnd"
+                />
+            </HBox>
+        </form:SimpleForm>
+
+        <Table
+            id="idEmployeesTable"
+            inset="false"
+            items="{
+                        path: 'odataNorthwind>/Employees',
+                        sorter: {
+                            path: 'EmployeeID'
+                        }
+                    }"
+        >
+            <!-- itemPress="onCellPress" -->
+            <columns>
+                <Column>
+                    <Text
+                        visible="{jsonModelConfig>/visibleID}"
+                        text="{i18n>colEmployeeID}"
+                    />
+                </Column>
+                <Column>
+                    <Text
+                        visible="{jsonModelConfig>/visibleName}"
+                        text="{i18n>colName}"
+                    />
+                </Column>
+                <Column>
+                    <Text
+                        visible="{jsonModelConfig>/visibleCountry}"
+                        text="{i18n>colCountry}"
+                    />
+                </Column>
+                <Column visible="{jsonModelConfig>/visibleCity}">
+                    <Text text="{i18n>colCity}" />
+                </Column>
+                <Column width="100px">
+                    <Text text="{i18n>colShowDetails}" />
+                </Column>
+            </columns>
+            <items>
+                <ColumnListItem
+                    vAlign="Middle"
+                    type="Navigation"
+                    press="showEmployee"
+                >
+                    <cells>
+                        <ObjectIdentifier
+                            title="{Name}"
+                            text="{odataNorthwind>EmployeeID}"
+                        />
+                        <Text
+                            text="{odataNorthwind>LastName}, {odataNorthwind>FirstName}"
+                        />
+                        <Text text="{odataNorthwind>Country}" />
+
+                        <Text text="{odataNorthwind>City}" />
+                        <core:Icon
+                            src="sap-icon://show"
+                            press="showOrders"
+                        />
+                    </cells>
+                </ColumnListItem>
+            </items>
+        </Table>
+        <HBox id="ordersTable" />
+    </Panel>
+</core:FragmentDefinition>

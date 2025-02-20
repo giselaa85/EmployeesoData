@@ -16,7 +16,7 @@
             "toolsId": "9b1f74bd-c1e3-4d59-a789-46cf27c758cb"
         },
         "dataSources": {
-            "mainService": {
+            "Northwind.svc": {
                 "uri": "/v3/northwind/northwind.svc/",
                 "type": "OData",
                 "settings": {
@@ -63,10 +63,15 @@
                     "bundleName": "logaligroup.logali.i18n.i18n"
                 }
             },
-            "": {
-                "dataSource": "mainService",
+            "odataNorthwind": {
+                "dataSource": "Northwind.svc",
                 "preload": true,
-                "settings": {}
+                "settings": {
+                    "defaultBindingMode": "OneWay",
+                    "defaultOperationMode": "Server",
+                    "defaultCountMode":"Request",
+                    "refreshAfterChange": false
+                }
             }
         },
         "resources": {
@@ -90,24 +95,28 @@
             },
             "routes": [
                 {
-                    "name": "RouteMainView",
-                    "pattern": ":?query:",
+                    "name": "RouteMain",
+                    "pattern":"RouteMain",
                     "target": [
-                        "TargetMainView"
+                        "TargetMain"
                     ]
                 }
             ],
             "targets": {
-                "TargetMainView": {
-                    "id": "MainView",
-                    "name": "MainView"
+                "TargetMain": {
+                    "id": "Main",
+                    "name": "Main"
+                },
+                "TargetMasterEmployee": {
+                    "id": "MasterEmployee",
+                    "name": "MasterEmployee"
                 }
             }
         },
         "rootView": {
-            "viewName": "logaligroup.logali.view.App",
+            "viewName": "logaligroup.logali.view.Main",
             "type": "XML",
-            "id": "App"
+            "id": "Main"
         }
     }
 }
