@@ -20,6 +20,10 @@ server:
             path: /v3
             url: https://services.odata.org
             destination: Northwind
+          - scp: true
+            path: /sap/opu/odata/sap/YSAPUI5_SRV_01/
+            url: http://erp13.sap4practice.com:9037
+            destination: logaligroupERP            
     - name: fiori-tools-appreload
       afterMiddleware: compression
       configuration:

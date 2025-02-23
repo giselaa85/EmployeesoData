@@ -7,14 +7,19 @@ import Control from "sap/ui/core/Control";
 import formatter from "../model/formatter";
 import { Icon$PressEvent } from "sap/ui/core/Icon";
 import Context from "sap/ui/model/Context";
+import EventBus from "sap/ui/core/EventBus";
 
 /**
  * @namespace logaligroup.logali.controller
  */
 export default class EmployeeDetails extends Controller {
-    formatter = formatter;
+    public formatter = formatter;
+    private _bus: EventBus;
+
     public onInit(): void {
+     this._bus = EventBus.getInstance();
     }
+
     public onCreateIncidence(): void {
         const oTableIncidence: Panel = this.getView()?.byId("tableIncidence") as Panel;
         const incidenceModel: JSONModel = this.getView()?.getModel("incidenceModel") as JSONModel;
@@ -62,5 +67,13 @@ export default class EmployeeDetails extends Controller {
             });
 
         }
+    }
+
+    public onSaveIncidence(oEvent: Icon$PressEvent): void | undefined{
+        const incidence = oEvent.getSource().getParent()?.getParent();
+        const incidenceRow:Context = incidence?.getBindingContext("incidenceModel") as Context;
+     
+        debugger;
+        this._bus.publish("incidence", "onSaveIncidence", { incidenceRow : incidenceRow?.getPath()?.toString().replace("/","") });
     }
 }

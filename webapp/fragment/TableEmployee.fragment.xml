@@ -95,7 +95,7 @@
                 <Column>
                     <Text
                         visible="{jsonModelConfig>/visibleID}"
-                        text="{i18n>colEmployeeID}"
+                        text="{i18n>colEmployeeId}"
                     />
                 </Column>
                 <Column>
