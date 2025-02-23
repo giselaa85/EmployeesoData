@@ -103,19 +103,12 @@ export default class Main extends Controller {
             const body = {
                 SapId: "gisela.agusti@gmail.com",
                 EmployeeId: employeeId.toString(),
-                CreationData: incidenceData.CreationDate,
+                CreationDate: incidenceData.CreationDate,
                 Type: incidenceData.Type,
                 Reason: incidenceData.Reason
             };
 
-            const newBody = {
-                            SapId: "test@test.com",
-                            EmployeeId: "112",
-                            CreationDate: "2025-02-23T15:00:00",
-                            Type: "1",
-                            Reason: "reason"
-                          };
-          debugger;                          
+                            
 
             const incidenceModelCreate: ODataModel = this.getView()?.getModel("incidenceModel") as ODataModel;
  
