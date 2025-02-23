@@ -23,7 +23,7 @@
       "outputCapture": "std",
       "env": {
         "run.config": "{\"handlerId\":\"fiori_tools\",\"runnableId\":\"/home/user/projects/sapui5_logali/typescript/logali\"}",
-        "FIORI_TOOLS_BACKEND_CONFIG": "[{\"destination\":\"Northwind\",\"url\":\"https://services.odata.org\",\"path\":\"/v3\"}]",
+        "FIORI_TOOLS_BACKEND_CONFIG": "[{\"destination\":\"logaligroupERP\",\"url\":\"http://erp13.sap4practice.com:9037\",\"path\":\"/sap\"},{\"path\":\"/V3\",\"url\":\"https://services.odata.org\"}]",
         "FIORI_TOOLS_URL_PARAMS": "sap-ui-xx-viewCache=false",
         "FIORI_TOOLS_UI5_VERSION": "1.133.0",
         "FIORI_TOOLS_UI5_URI": "https://ui5.sap.com"

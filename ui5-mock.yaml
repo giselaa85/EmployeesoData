@@ -17,9 +17,11 @@ server:
           url: https://ui5.sap.com
         backend:
           - scp: true
-            path: /v3
+            path: /sap
+            url: http://erp13.sap4practice.com:9037
+            destination: logaligroupERP
+          - path: /V3
             url: https://services.odata.org
-            destination: Northwind
     - name: fiori-tools-appreload
       afterMiddleware: compression
       configuration:
@@ -44,6 +46,10 @@ server:
       configuration:
         mountPath: /
         services:
+          - urlPath: /sap/opu/odata/sap/YSAPUI5_SRV_01
+            metadataPath: ./webapp/localService/mainService/metadata.xml
+            mockdataPath: ./webapp/localService/mainService/data
+            generateMockData: true        
           - urlPath: /v3/northwind/northwind.svc
             metadataPath: ./webapp/localService/metadata.xml
             mockdataPath: ./webapp/localService/data

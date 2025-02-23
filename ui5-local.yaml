@@ -47,10 +47,14 @@ server:
       configuration:
         mountPath: /
         services:
-          - urlPath: /v3/northwind/northwind.svc
-            metadataPath: ./webapp/localService/metadata.xml
-            mockdataPath: ./webapp/localService/data
+          - urlPath: /sap/opu/odata/sap/YSAPUI5_SRV_01
+            metadataPath: ./webapp/localService/mainService/metadata.xml
+            mockdataPath: ./webapp/localService/mainService/data
             generateMockData: true
+          - urlPath: /V3
+            metadataPath: ./webapp/localService/Northwind/metadata.xml
+            mockdataPath: ./webapp/localService/Northwind/data
+            generateMockData: true   
         annotations: []
 builder:
   customTasks:

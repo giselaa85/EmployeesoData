@@ -108,8 +108,17 @@ export default class Main extends Controller {
                 Reason: incidenceData.Reason
             };
 
-            const incidenceModelCreate: ODataModel = this.getView()?.getModel("incidenceModel") as ODataModel;
+            const newBody = {
+                            SapId: "test@test.com",
+                            EmployeeId: "112",
+                            CreationDate: "2025-02-23T15:00:00",
+                            Type: "1",
+                            Reason: "reason"
+                          };
+          debugger;                          
 
+            const incidenceModelCreate: ODataModel = this.getView()?.getModel("incidenceModel") as ODataModel;
+ 
             incidenceModelCreate.create("/IncidentsSet", body, {
                 success: function () {
                     MessageToast.show(oResourceModel.getText("odataSavedOK") || "");

@@ -17,13 +17,11 @@ server:
           url: https://ui5.sap.com
         backend:
           - scp: true
-            path: /v3
-            url: https://services.odata.org
-            destination: Northwind
-          - scp: true
-            path: /sap/opu/odata/sap/YSAPUI5_SRV_01/
+            path: /sap
             url: http://erp13.sap4practice.com:9037
-            destination: logaligroupERP            
+            destination: logaligroupERP
+          - path: /V3
+            url: https://services.odata.org    
     - name: fiori-tools-appreload
       afterMiddleware: compression
       configuration:
