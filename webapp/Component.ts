@@ -6,7 +6,7 @@ import { createDeviceModel } from "./model/models";
  */
 export default class Component extends BaseComponent {
 
-    public SapId: "gisela.agusti@gmail.com";
+    public SapId = "gisela.agusti@gmail.com";
 	public static metadata = {
 		manifest: "json",
         interfaces: [

@@ -12,7 +12,16 @@ import MessageToast from "sap/m/MessageToast";
 /**
  * @namespace logaligroup.logali.controller
  */
+interface Incidence {
+    index: number,
+    IncidenceId: number,
+    CreationDate: Date,
+    Type: number,
+    Reason: string
+  }
+
 export default class Main extends Controller {
+    
     private _bus: EventBus;
     public _detailEmployeeView: View;
 
@@ -61,13 +70,12 @@ export default class Main extends Controller {
             });
 
         this._bus = EventBus.getInstance();
-
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         this._bus.subscribe("flexible", "showEmployee", (category: string, nameEvent: string, path: any) => {
             this.showEmployeeDetails(category, nameEvent, path);
         });
-
-        this._bus.subscribe("incidence", "onSaveIncidence", this.onSaveODataIncidence, this);
+        this._bus.subscribe("incidence", "onSaveIncidence", (channelId:string, eventId:string, data:any) => {
+            this.onSaveODataIncidence(channelId, eventId, data)}, this);
 
     }
 
@@ -86,7 +94,7 @@ export default class Main extends Controller {
 
     }
 
-    private onSaveODataIncidence(channelId, eventId, data): void | undefined {
+    private onSaveODataIncidence(channelId:string, eventId:string, data:{incidenceRow:number}): void | undefined {
         debugger;
         const oResourceModel = <ResourceBundle>(
             (<ResourceModel>(
@@ -96,20 +104,18 @@ export default class Main extends Controller {
         const employeeId = this._detailEmployeeView.getBindingContext("odataNorthwind")?.getObject().EmployeeID;
         const incidenceModel: ODataModel = this._detailEmployeeView.getModel("incidenceModel") as ODataModel;
         const incidenceContext = incidenceModel
-        const incidenceModelData = incidenceModel.getData();
-        const incidenceData = incidenceModelData[data.incidenceRow];
-        if (typeof (incidenceData.IncidenceId == "undefined")) {
-            // SapId : this.getOwnerComponent()?.SapId,
+        const incidenceModelData = incidenceModel.getProperty("/") as Incidence[];
+        const index:number = data.incidenceRow;
+        const incidenceData = incidenceModelData[index] as Incidence;
+        if (typeof (incidenceData.IncidenceId) == "undefined") {
             const body = {
-                SapId: "gisela.agusti@gmail.com",
+                SapId: this.getOwnerComponent()?.SapId,
                 EmployeeId: employeeId.toString(),
                 CreationDate: incidenceData.CreationDate,
                 Type: incidenceData.Type,
                 Reason: incidenceData.Reason
             };
-
-                            
-
+            debugger;
             const incidenceModelCreate: ODataModel = this.getView()?.getModel("incidenceModel") as ODataModel;
  
             incidenceModelCreate.create("/IncidentsSet", body, {
