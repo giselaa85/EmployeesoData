@@ -18,7 +18,7 @@ import { Icon$PressEvent } from "sap/ui/core/Icon";
 import Fragment from "sap/ui/core/Fragment";
 import Dialog from "sap/m/Dialog";
 import EventBus from "sap/ui/core/EventBus";
-import formatter from "../model/formatter";
+ import formatter from "../model/formatter";
 
 
 /**

@@ -12,12 +12,14 @@
                 />
 
                 <Title
-                    text="{i18n>incidence} {incidenceModel>index} { path: 'incidenceModel>CreationDate', formatter:'.formatter.dateFormat'}"
+                    text="{i18n>incidence} 
+                     {= ${incidenceModel>IncidenceId} ? parseInt(${incidenceModel>IncidenceId}) : ''} 
+                      { path: 'incidenceModel>CreationDate', formatter:'.formatter.dateFormat'}"  
                 />
                 <ToolbarSpacer />
                  <core:Icon
                     src="sap-icon://save"
-                    press="onSaveIncidence"
+                    press="onSaveIncidence"                   
                 />
                 <core:Icon
                     src="sap-icon://delete"
@@ -31,15 +33,15 @@
                     <Text text="{i18n>incidenceDate}" />
                     <DatePicker dateValue="{incidenceModel>CreationDate}" />
                 </VBox>
-                <VBox
-                    visible="{= ${incidenceModel>CreationDate} !== '' &amp;&amp; ${incidenceModel>CreationDate} !== undefined}"
-                >
+                <VBox 
+                      visible="{= ${incidenceModel>CreationDate} !== '' &amp;&amp; ${incidenceModel>CreationDate} !== undefined}"  
+                 >  
                     <Text text="{i18n>incidenceReason}" />
                     <Input value="{incidenceModel>Reason}" />
                 </VBox>
-                <VBox
-                    visible="{= ${incidenceModel>CreationDate} !== '' &amp;&amp; ${incidenceModel>CreationDate} !== undefined}"
-                >
+                <VBox 
+                    visible="{= ${incidenceModel>CreationDate} !== '' &amp;&amp; ${incidenceModel>CreationDate} !== undefined}" 
+                > 
                     <Text text="{i18n>incidenceType}" />
                     <Select
                         selectedKey="{incidenceModel>Type}"

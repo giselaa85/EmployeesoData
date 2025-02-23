@@ -8,6 +8,12 @@ import ResourceBundle from "sap/base/i18n/ResourceBundle";
 import ResourceModel from "sap/ui/model/resource/ResourceModel";
 import ODataModel from "sap/ui/model/odata/v2/ODataModel";
 import MessageToast from "sap/m/MessageToast";
+import Component from "../Component";
+import Filter from "sap/ui/model/Filter";
+import FilterOperator from "sap/ui/model/FilterOperator";
+import Fragment from "sap/ui/core/Fragment";
+import Control from "sap/ui/core/Control";
+ 
 
 /**
  * @namespace logaligroup.logali.controller
@@ -18,10 +24,10 @@ interface Incidence {
     CreationDate: Date,
     Type: number,
     Reason: string
-  }
+}
 
 export default class Main extends Controller {
-    
+ 
     private _bus: EventBus;
     public _detailEmployeeView: View;
 
@@ -74,8 +80,9 @@ export default class Main extends Controller {
         this._bus.subscribe("flexible", "showEmployee", (category: string, nameEvent: string, path: any) => {
             this.showEmployeeDetails(category, nameEvent, path);
         });
-        this._bus.subscribe("incidence", "onSaveIncidence", (channelId:string, eventId:string, data:any) => {
-            this.onSaveODataIncidence(channelId, eventId, data)}, this);
+        this._bus.subscribe("incidence", "onSaveIncidence", (channelId: string, eventId: string, data: any) => {
+            this.onSaveODataIncidence(channelId, eventId, data)
+        }, this);
 
     }
 
@@ -92,9 +99,11 @@ export default class Main extends Controller {
         const oPanel: Panel = oDetailView.byId("tableIncidence") as Panel;
         oPanel.removeAllContent();
 
+        this.onReadODataIncidence(this._detailEmployeeView.getBindingContext("odataNorthwind")?.getObject().EmployeeID);
+
     }
 
-    private onSaveODataIncidence(channelId:string, eventId:string, data:{incidenceRow:number}): void | undefined {
+    private onSaveODataIncidence(channelId: string, eventId: string, data: { incidenceRow: number }): void | undefined {
         debugger;
         const oResourceModel = <ResourceBundle>(
             (<ResourceModel>(
@@ -105,11 +114,11 @@ export default class Main extends Controller {
         const incidenceModel: ODataModel = this._detailEmployeeView.getModel("incidenceModel") as ODataModel;
         const incidenceContext = incidenceModel
         const incidenceModelData = incidenceModel.getProperty("/") as Incidence[];
-        const index:number = data.incidenceRow;
+        const index: number = data.incidenceRow;
         const incidenceData = incidenceModelData[index] as Incidence;
         if (typeof (incidenceData.IncidenceId) == "undefined") {
             const body = {
-                SapId: this.getOwnerComponent()?.SapId,
+                SapId: Component.SapId,
                 EmployeeId: employeeId.toString(),
                 CreationDate: incidenceData.CreationDate,
                 Type: incidenceData.Type,
@@ -117,11 +126,12 @@ export default class Main extends Controller {
             };
             debugger;
             const incidenceModelCreate: ODataModel = this.getView()?.getModel("incidenceModel") as ODataModel;
- 
+
             incidenceModelCreate.create("/IncidentsSet", body, {
-                success: function () {
+                success: () => {
                     MessageToast.show(oResourceModel.getText("odataSavedOK") || "");
-                }.bind(this),
+                    this.onReadODataIncidence(employeeId.toString());
+                },
                 error: function (e: any) {
                     MessageToast.show(oResourceModel.getText("odataSavedNoOK") || "");
                 }.bind(this)
@@ -131,8 +141,81 @@ export default class Main extends Controller {
             MessageToast.show(oResourceModel.getText("odataNoChanges") || "");
         }
         debugger;
- 
-
-
     }
+
+    private onReadODataIncidence(employeeID: number) {
+        const incidenceModelCreate: ODataModel = this.getView()?.getModel("incidenceModel") as ODataModel;
+            incidenceModelCreate.read("/IncidentsSet", {
+            filters: [
+                new Filter("SapId", FilterOperator.EQ, Component.SapId),
+                new Filter("EmployeeId", FilterOperator.EQ, employeeID.toString())
+            ],
+            success: (data: any) => {
+                const incidenceModel: JSONModel = this._detailEmployeeView.getModel("incidenceModel") as JSONModel;
+                incidenceModel.setData(data.results);
+                const oTableIncidence: Panel = this._detailEmployeeView?.byId("tableIncidence") as Panel;
+                oTableIncidence.removeAllContent();
+                debugger;
+                data.results.forEach((incidence: any, index: number) => {
+                    Fragment.load({
+                        name: "logaligroup.logali.fragment.NewIncidence",
+                        controller: this._detailEmployeeView?.getController()
+                    }).then((newInc) => {
+                        const newIncidence = newInc as Control;
+                        this._detailEmployeeView.addDependent(newIncidence);
+                        debugger;
+                        newIncidence.bindElement("incidenceModel>/" + index);
+                        oTableIncidence.addContent(newIncidence);
+
+                    }).catch((error) => {
+                        console.error("Error loading fragment:", error);
+                    });
+                });
+            },
+            error: (e: any) => {
+            }
+        });
+//        
+// this._detailEmployeeView.setBusy(true);
+//         incidenceModelCreate.read("/IncidentsSet", {
+//             filters: [
+//                 new Filter("SapId", FilterOperator.EQ, Component.SapId),
+//                 new Filter("EmployeeId", FilterOperator.EQ, employeeID.toString())
+//             ],
+//             success: (data: any) => {
+//                 const incidenceModel: JSONModel = this._detailEmployeeView.getModel("incidenceModel") as JSONModel;
+//                 incidenceModel.setData(data.results);
+//                 const oTableIncidence: Panel = this._detailEmployeeView?.byId("tableIncidence") as Panel;
+//                 oTableIncidence.removeAllContent();
+
+//                 const fPromises = data.results.map((incidence: any, index: number) => {
+//                     return Fragment.load({
+//                         name: "logaligroup.logali.fragment.NewIncidence",
+//                         controller: this
+//                     }).then((newInc) => {
+//                         debugger;
+//                         const newIncidence = newInc as Control;
+//                         this._detailEmployeeView.addDependent(newIncidence);
+//                         newIncidence.bindElement("incidenceModel>/" + index);
+//                         oTableIncidence.addContent(newIncidence);
+//                     }).catch((error) => {
+//                         console.error("Error loading fragment:", error);
+//                     });
+//                 });
+        
+//                 Promise.all(fPromises)
+//                     .then(() => {
+//                         this._detailEmployeeView.setBusy(false);
+//                     })
+//                     .catch((e: any) => {
+//                         this._detailEmployeeView.setBusy(false);
+//                     });
+//             },
+//             error:  (e: any) => {
+//                 this._detailEmployeeView.setBusy(false);
+//             } 
+//         });
+    }
+
+    
 }
