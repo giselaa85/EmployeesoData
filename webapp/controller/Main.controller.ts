@@ -13,21 +13,25 @@ import Filter from "sap/ui/model/Filter";
 import FilterOperator from "sap/ui/model/FilterOperator";
 import Fragment from "sap/ui/core/Fragment";
 import Control from "sap/ui/core/Control";
- 
+
 
 /**
  * @namespace logaligroup.logali.controller
  */
+
 interface Incidence {
-    index: number,
     IncidenceId: number,
+    SapId: string,
     CreationDate: Date,
+    CreationDateX: boolean,
     Type: number,
+    TypeX: boolean,
     Reason: string
+    ReasonX: boolean
 }
 
 export default class Main extends Controller {
- 
+
     private _bus: EventBus;
     public _detailEmployeeView: View;
 
@@ -83,6 +87,9 @@ export default class Main extends Controller {
         this._bus.subscribe("incidence", "onSaveIncidence", (channelId: string, eventId: string, data: any) => {
             this.onSaveODataIncidence(channelId, eventId, data)
         }, this);
+        this._bus.subscribe("incidence", "onDeleteIncidence", (channelId: string, eventId: string, data: any) => {
+            this.onDeleteODataIncidence(channelId, eventId, data)
+        }, this);
 
     }
 
@@ -104,7 +111,6 @@ export default class Main extends Controller {
     }
 
     private onSaveODataIncidence(channelId: string, eventId: string, data: { incidenceRow: number }): void | undefined {
-        debugger;
         const oResourceModel = <ResourceBundle>(
             (<ResourceModel>(
                 this.getOwnerComponent()?.getModel("i18n")
@@ -137,6 +143,31 @@ export default class Main extends Controller {
                 }.bind(this)
             });
         }
+        else if (incidenceData.CreationDateX || incidenceData.ReasonX || incidenceData.TypeX) {
+            const body = {
+                CreationDate: incidenceData.CreationDate,
+                CreationDateX: incidenceData.CreationDateX,
+                Type: incidenceData.Type,
+                TypeX: incidenceData.TypeX,
+                Reason: incidenceData.Reason,
+                ReasonX: incidenceData.ReasonX
+            };
+            const incidenceModelUpdate: ODataModel = this.getView()?.getModel("incidenceModel") as ODataModel;
+            const updRoute = "/IncidentsSet(" +
+                "IncidenceId='" + incidenceData.IncidenceId +
+                "',SapId='" + Component.SapId +
+                "',EmployeeId='" + employeeId.toString() + "')";
+            debugger;
+            incidenceModelUpdate.update(updRoute, body, {
+                success: () => {
+                    MessageToast.show(oResourceModel.getText("odataUpdateOK") || "");
+                    this.onReadODataIncidence(employeeId.toString());
+                },
+                error: function (e: any) {
+                    MessageToast.show(oResourceModel.getText("odataUpdateNoOK") || "");
+                }.bind(this)
+            });
+        }
         else {
             MessageToast.show(oResourceModel.getText("odataNoChanges") || "");
         }
@@ -145,7 +176,7 @@ export default class Main extends Controller {
 
     private onReadODataIncidence(employeeID: number) {
         const incidenceModelCreate: ODataModel = this.getView()?.getModel("incidenceModel") as ODataModel;
-            incidenceModelCreate.read("/IncidentsSet", {
+        incidenceModelCreate.read("/IncidentsSet", {
             filters: [
                 new Filter("SapId", FilterOperator.EQ, Component.SapId),
                 new Filter("EmployeeId", FilterOperator.EQ, employeeID.toString())
@@ -175,47 +206,72 @@ export default class Main extends Controller {
             error: (e: any) => {
             }
         });
-//        
-// this._detailEmployeeView.setBusy(true);
-//         incidenceModelCreate.read("/IncidentsSet", {
-//             filters: [
-//                 new Filter("SapId", FilterOperator.EQ, Component.SapId),
-//                 new Filter("EmployeeId", FilterOperator.EQ, employeeID.toString())
-//             ],
-//             success: (data: any) => {
-//                 const incidenceModel: JSONModel = this._detailEmployeeView.getModel("incidenceModel") as JSONModel;
-//                 incidenceModel.setData(data.results);
-//                 const oTableIncidence: Panel = this._detailEmployeeView?.byId("tableIncidence") as Panel;
-//                 oTableIncidence.removeAllContent();
+        //        
+        // this._detailEmployeeView.setBusy(true);
+        //         incidenceModelCreate.read("/IncidentsSet", {
+        //             filters: [
+        //                 new Filter("SapId", FilterOperator.EQ, Component.SapId),
+        //                 new Filter("EmployeeId", FilterOperator.EQ, employeeID.toString())
+        //             ],
+        //             success: (data: any) => {
+        //                 const incidenceModel: JSONModel = this._detailEmployeeView.getModel("incidenceModel") as JSONModel;
+        //                 incidenceModel.setData(data.results);
+        //                 const oTableIncidence: Panel = this._detailEmployeeView?.byId("tableIncidence") as Panel;
+        //                 oTableIncidence.removeAllContent();
 
-//                 const fPromises = data.results.map((incidence: any, index: number) => {
-//                     return Fragment.load({
-//                         name: "logaligroup.logali.fragment.NewIncidence",
-//                         controller: this
-//                     }).then((newInc) => {
-//                         debugger;
-//                         const newIncidence = newInc as Control;
-//                         this._detailEmployeeView.addDependent(newIncidence);
-//                         newIncidence.bindElement("incidenceModel>/" + index);
-//                         oTableIncidence.addContent(newIncidence);
-//                     }).catch((error) => {
-//                         console.error("Error loading fragment:", error);
-//                     });
-//                 });
-        
-//                 Promise.all(fPromises)
-//                     .then(() => {
-//                         this._detailEmployeeView.setBusy(false);
-//                     })
-//                     .catch((e: any) => {
-//                         this._detailEmployeeView.setBusy(false);
-//                     });
-//             },
-//             error:  (e: any) => {
-//                 this._detailEmployeeView.setBusy(false);
-//             } 
-//         });
+        //                 const fPromises = data.results.map((incidence: any, index: number) => {
+        //                     return Fragment.load({
+        //                         name: "logaligroup.logali.fragment.NewIncidence",
+        //                         controller: this
+        //                     }).then((newInc) => {
+        //                         debugger;
+        //                         const newIncidence = newInc as Control;
+        //                         this._detailEmployeeView.addDependent(newIncidence);
+        //                         newIncidence.bindElement("incidenceModel>/" + index);
+        //                         oTableIncidence.addContent(newIncidence);
+        //                     }).catch((error) => {
+        //                         console.error("Error loading fragment:", error);
+        //                     });
+        //                 });
+
+        //                 Promise.all(fPromises)
+        //                     .then(() => {
+        //                         this._detailEmployeeView.setBusy(false);
+        //                     })
+        //                     .catch((e: any) => {
+        //                         this._detailEmployeeView.setBusy(false);
+        //                     });
+        //             },
+        //             error:  (e: any) => {
+        //                 this._detailEmployeeView.setBusy(false);
+        //             } 
+        //         });
     }
 
-    
+    private onDeleteODataIncidence(channelId: string, eventId: string, data: { incidenceRow: number }): void | undefined {
+        const oResourceModel = <ResourceBundle>(
+            (<ResourceModel>(
+                this.getOwnerComponent()?.getModel("i18n")
+            ))?.getResourceBundle()
+        );
+        const employeeId = this._detailEmployeeView.getBindingContext("odataNorthwind")?.getObject().EmployeeID;
+        const incidenceModel: ODataModel = this._detailEmployeeView.getModel("incidenceModel") as ODataModel;
+        const incidenceContext = incidenceModel
+        const incidenceData = incidenceModel.getProperty("/0") as Incidence;
+        const incidenceModelUpdate: ODataModel = this.getView()?.getModel("incidenceModel") as ODataModel;
+        const deleteRoute = "/IncidentsSet(" +
+            "IncidenceId='" + incidenceData.IncidenceId +
+            "',SapId='" + Component.SapId +
+            "',EmployeeId='" + employeeId.toString() + "')";
+        incidenceModelUpdate.remove(deleteRoute, {
+            success: () => {
+                MessageToast.show(oResourceModel.getText("odataDeleteOK") || "");
+                this.onReadODataIncidence(employeeId.toString());
+            },
+            error: function (e: any) {
+                MessageToast.show(oResourceModel.getText("odataDeleteNoOK") || "");
+            }.bind(this)
+        });
+    }
+
 }

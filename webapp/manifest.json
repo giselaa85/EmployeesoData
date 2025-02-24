@@ -89,7 +89,14 @@
                 "incidenceModel": {
                   "dataSource": "mainService",
                   "preload": true,
-                  "settings": {}
+                  "settings": {
+                    "defaultOperationMode": "Server",
+                    "defaultBindingMode": "TwoWay",
+                    "defaultCoutMode": "Request",
+                    "refreshAfterChange":false,
+                    "useBatch":false,
+                    "defaultUpdateMethod":"Put"
+                  }
                 }            
           
         },

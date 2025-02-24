@@ -19,11 +19,13 @@
                 <ToolbarSpacer />
                  <core:Icon
                     src="sap-icon://save"
-                    press="onSaveIncidence"                   
+                    press="onSaveIncidence"   
+                    color="#008000"              
                 />
                 <core:Icon
                     src="sap-icon://delete"
                     press="onDeleteIncidence"
+                    color="#ff0000"
                 />
             </Toolbar>
         </headerToolbar>
@@ -31,13 +33,13 @@
             <HBox>
                 <VBox class="sapUiSmallMarginEnd">
                     <Text text="{i18n>incidenceDate}" />
-                    <DatePicker dateValue="{incidenceModel>CreationDate}" />
+                    <DatePicker dateValue="{incidenceModel>CreationDate}" change="updateIncidenceCreationDate"/>
                 </VBox>
                 <VBox 
                       visible="{= ${incidenceModel>CreationDate} !== '' &amp;&amp; ${incidenceModel>CreationDate} !== undefined}"  
                  >  
                     <Text text="{i18n>incidenceReason}" />
-                    <Input value="{incidenceModel>Reason}" />
+                    <Input value="{incidenceModel>Reason}" change="updateIncidenceReason" />
                 </VBox>
                 <VBox 
                     visible="{= ${incidenceModel>CreationDate} !== '' &amp;&amp; ${incidenceModel>CreationDate} !== undefined}" 
@@ -46,6 +48,7 @@
                     <Select
                         selectedKey="{incidenceModel>Type}"
                         forceSelection="false"
+                        change="updateIncidenceType"
                     >
                         <core:Item
                             key="0"
