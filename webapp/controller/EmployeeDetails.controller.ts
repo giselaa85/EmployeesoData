@@ -65,6 +65,7 @@ export default class EmployeeDetails extends Controller {
             SapId:oContextObj.SapId,
             EmployeeId:oContextObj.EmployeeId           
          });
+        // 
         // Code to delete just locally
         // const rowIncidence = oEvent.getSource().getParent()?.getParent();
         // if (rowIncidence) {
