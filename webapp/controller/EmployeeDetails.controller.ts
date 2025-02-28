@@ -12,20 +12,27 @@ import { DatePicker$ChangeEvent } from "sap/m/DatePicker";
 import { TextField$ChangeEvent } from "sap/ui/commons/TextField";
 import { InputBase$ChangeEvent } from "sap/m/InputBase";
 import { Select$ChangeEvent } from "sap/m/Select";
+import MessageBox from "sap/m/MessageBox";
+import ResourceBundle from "sap/base/i18n/ResourceBundle";
+import ResourceModel from "sap/ui/model/resource/ResourceModel";
+import { TextDirection } from "sap/ui/core/library";
 
 /**
  * @namespace logaligroup.logali.controller
  */
 interface Incidence {
     IncidenceId: number,
-    SapId:string,
-    EmployeeId:string,
+    SapId: string,
+    EmployeeId: string,
     CreationDate: Date,
     CreationDateX: boolean,
     Type: number,
     TypeX: boolean,
-    Reason: string
-    ReasonX: boolean
+    Reason: string,
+    ReasonX: boolean,
+    _ValidateDate: boolean,
+    CreationDateState: "Error" | "Information" | "None" | "Success" | "Warning",
+    ReasonState: "Error" | "Information" | "None" | "Success" | "Warning"
 }
 
 export default class EmployeeDetails extends Controller {
@@ -33,16 +40,16 @@ export default class EmployeeDetails extends Controller {
     private _bus: EventBus;
 
     public onInit(): void {
-     this._bus = EventBus.getInstance();
+        this._bus = EventBus.getInstance();
     }
 
     public onCreateIncidence(): void {
         const oTableIncidence: Panel = this.getView()?.byId("tableIncidence") as Panel;
         const incidenceModel: JSONModel = this.getView()?.getModel("incidenceModel") as JSONModel;
-        const oData: { index: number, date?: Date, status?: number }[]
-            = incidenceModel.getData() as { index: number, date?: Date, status?: number }[];
+        const oData: { index: number, date?: Date, status?: number, _ValidateDate: boolean }[]
+            = incidenceModel.getData() as { index: number, date?: Date, status?: number, _ValidateDate: boolean }[];
         const index: number = oData.length;
-        oData.push({ index: index + 1 });
+        oData.push({ index: index + 1, _ValidateDate: false });
         Fragment.load({
             name: "logaligroup.logali.fragment.NewIncidence",
             controller: this
@@ -58,13 +65,13 @@ export default class EmployeeDetails extends Controller {
 
     public onDeleteIncidence(oEvent: Icon$PressEvent): void {
         const incidence = oEvent.getSource();
-        const oContext:Context = incidence?.getBindingContext("incidenceModel") as Context;
-        const oContextObj:Incidence = oContext.getObject() as Incidence;
+        const oContext: Context = incidence?.getBindingContext("incidenceModel") as Context;
+        const oContextObj: Incidence = oContext.getObject() as Incidence;
         this._bus.publish("incidence", "onDeleteIncidence", {
             IncidenceId: oContextObj.IncidenceId,
-            SapId:oContextObj.SapId,
-            EmployeeId:oContextObj.EmployeeId           
-         });
+            SapId: oContextObj.SapId,
+            EmployeeId: oContextObj.EmployeeId
+        });
         // 
         // Code to delete just locally
         // const rowIncidence = oEvent.getSource().getParent()?.getParent();
@@ -95,33 +102,60 @@ export default class EmployeeDetails extends Controller {
         // }
     }
 
-    public onSaveIncidence(oEvent: Icon$PressEvent): void | undefined{
+    public onSaveIncidence(oEvent: Icon$PressEvent): void | undefined {
         const incidence = oEvent.getSource().getParent()?.getParent();
-        const incidenceRow:Context = incidence?.getBindingContext("incidenceModel") as Context;
-     
+        const incidenceRow: Context = incidence?.getBindingContext("incidenceModel") as Context;
+
         debugger;
-        this._bus.publish("incidence", "onSaveIncidence", { incidenceRow : incidenceRow?.getPath()?.toString().replace("/","") });
+        this._bus.publish("incidence", "onSaveIncidence", { incidenceRow: incidenceRow?.getPath()?.toString().replace("/", "") });
     }
 
-    public updateIncidenceCreationDate(oEvent:DatePicker$ChangeEvent):void | undefined{
+    public updateIncidenceCreationDate(oEvent: DatePicker$ChangeEvent): void | undefined {
         const incidence = oEvent.getSource();
-        const oContext:Context = incidence?.getBindingContext("incidenceModel") as Context;
-        const oContextObj:Incidence = oContext.getObject() as Incidence;
-        oContextObj.CreationDateX = true;
+        const oContext: Context = incidence?.getBindingContext("incidenceModel") as Context;
+        const oContextObj: Incidence = oContext.getObject() as Incidence;
+        if (oEvent.getSource().isValidValue()) {
+            oContextObj._ValidateDate = true;
+            oContextObj.CreationDateState = "None";
+            oContextObj.CreationDateX = true;
+        }
+        else {
+            const oResourceModel = <ResourceBundle>(
+                (<ResourceModel>(
+                    this.getOwnerComponent()?.getModel("i18n")
+                ))?.getResourceBundle()
+            );
+            oContextObj._ValidateDate = false;
+            oContextObj.CreationDateState = "Error";
+            MessageBox.error(oResourceModel.getText("errorCreationDateValue")||"", {
+                title : oResourceModel.getText("errorTitle"),
+                styleClass: "",
+                actions : MessageBox.Action.CLOSE,
+                textDirection: TextDirection.Inherit
+            });
+        }
+        oContext.getModel().refresh();
+    }
+
+    public updateIncidenceReason(oEvent: InputBase$ChangeEvent): void | undefined {
+        const incidence = oEvent.getSource();
+        const oContext: Context = incidence?.getBindingContext("incidenceModel") as Context;
+        const oContextObj: Incidence = oContext.getObject() as Incidence;
+        if (oEvent.getSource().getValue()) {
+            oContextObj.ReasonState = "None";
+            oContextObj.ReasonX = true;
+        }
+        else {
+            oContextObj.ReasonState = "Error";
+        }
+        oContext.getModel().refresh();
 
     }
 
-    public updateIncidenceReason(oEvent:InputBase$ChangeEvent):void | undefined{
+    public updateIncidenceType(oEvent: Select$ChangeEvent): void | undefined {
         const incidence = oEvent.getSource();
-        const oContext:Context = incidence?.getBindingContext("incidenceModel") as Context;
-        const oContextObj:Incidence = oContext.getObject() as Incidence;
-        oContextObj.ReasonX = true;        
-    }
-
-    public updateIncidenceType(oEvent:Select$ChangeEvent):void | undefined{
-        const incidence = oEvent.getSource();
-        const oContext:Context = incidence?.getBindingContext("incidenceModel") as Context;
-        const oContextObj:Incidence = oContext.getObject() as Incidence;
+        const oContext: Context = incidence?.getBindingContext("incidenceModel") as Context;
+        const oContextObj: Incidence = oContext.getObject() as Incidence;
         oContextObj.TypeX = true;
-    }    
+    }
 }

@@ -21,13 +21,17 @@ import Control from "sap/ui/core/Control";
 
 interface Incidence {
     IncidenceId: number,
-    SapId: string,
+    SapId:string,
+    EmployeeId:string,
     CreationDate: Date,
     CreationDateX: boolean,
     Type: number,
     TypeX: boolean,
-    Reason: string
-    ReasonX: boolean
+    Reason: string,
+    ReasonX: boolean,
+    _ValidateDate:boolean,
+    CreationDateState:"Error"|"Information"|"None"|"Success"|"Warning",
+    ReasonState:"Error"|"Information"|"None"|"Success"|"Warning"
 }
 
 export default class Main extends Controller {
@@ -188,13 +192,13 @@ export default class Main extends Controller {
                 oTableIncidence.removeAllContent();
                 debugger;
                 data.results.forEach((incidence: any, index: number) => {
+                    incidence._ValidateDate = true;
                     Fragment.load({
                         name: "logaligroup.logali.fragment.NewIncidence",
                         controller: this._detailEmployeeView?.getController()
                     }).then((newInc) => {
                         const newIncidence = newInc as Control;
                         this._detailEmployeeView.addDependent(newIncidence);
-                        debugger;
                         newIncidence.bindElement("incidenceModel>/" + index);
                         oTableIncidence.addContent(newIncidence);
 
