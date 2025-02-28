@@ -78,27 +78,26 @@
                 "preload": true,
                 "dataSource": "Northwind",
                 "settings": {
-                  "defaultBindingMode": "TwoWay",
-                  "defaultCountMode": "Inline",
-                  "refreshAfterChange": false,
-                  "metadataUrlParams": {
-                    "sap-value-list": "none"
-                  }
+                    "defaultBindingMode": "TwoWay",
+                    "defaultCountMode": "Inline",
+                    "refreshAfterChange": false,
+                    "metadataUrlParams": {
+                        "sap-value-list": "none"
+                    }
                 }
-              },
-                "incidenceModel": {
-                  "dataSource": "mainService",
-                  "preload": true,
-                  "settings": {
+            },
+            "incidenceModel": {
+                "dataSource": "mainService",
+                "preload": true,
+                "settings": {
                     "defaultOperationMode": "Server",
                     "defaultBindingMode": "TwoWay",
                     "defaultCoutMode": "Request",
-                    "refreshAfterChange":false,
-                    "useBatch":false,
-                    "defaultUpdateMethod":"Put"
-                  }
-                }            
-          
+                    "refreshAfterChange": false,
+                    "useBatch": false,
+                    "defaultUpdateMethod": "Put"
+                }
+            }
         },
         "resources": {
             "css": [
@@ -106,6 +105,11 @@
                     "uri": "css/style.css"
                 }
             ]
+        },
+        "rootView": {
+            "viewName": "logaligroup.logali.view.App",
+            "type": "XML",
+            "id": "app"
         },
         "routing": {
             "config": {
@@ -122,7 +126,7 @@
             "routes": [
                 {
                     "name": "RouteMain",
-                    "pattern": "RouteMain",
+                    "pattern": "",
                     "target": [
                         "TargetMain"
                     ]
@@ -138,11 +142,6 @@
                     "name": "MasterEmployee"
                 }
             }
-        },
-        "rootView": {
-            "viewName": "logaligroup.logali.view.Main",
-            "type": "XML",
-            "id": "Main"
         }
     }
 }
