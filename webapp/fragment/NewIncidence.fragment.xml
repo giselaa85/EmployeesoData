@@ -17,15 +17,15 @@
                       { path: 'incidenceModel>CreationDate', formatter:'.formatter.dateFormat'}"
                 />
                 <ToolbarSpacer />
-                <core:Icon
-                    src="sap-icon://save"
+                <Button
+                    icon="sap-icon://save"
                     press="onSaveIncidence"
-                    color="#008000"
+                    enabled="{= ${incidenceModel>EnabledSave} === true}"
                 />
-                <core:Icon
-                    src="sap-icon://delete"
+                <Button
+                    icon="sap-icon://delete"
                     press="onDeleteIncidence"
-                    color="#ff0000"
+                    enabled="{= ${incidenceModel>EnabledDelete} === true}"
                 />
             </Toolbar>
         </headerToolbar>

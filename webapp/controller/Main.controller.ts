@@ -13,6 +13,7 @@ import Filter from "sap/ui/model/Filter";
 import FilterOperator from "sap/ui/model/FilterOperator";
 import Fragment from "sap/ui/core/Fragment";
 import Control from "sap/ui/core/Control";
+import MessageBox from "sap/m/MessageBox";
 
 
 /**
@@ -20,18 +21,21 @@ import Control from "sap/ui/core/Control";
  */
 
 interface Incidence {
-    IncidenceId: number,
-    SapId:string,
-    EmployeeId:string,
-    CreationDate: Date,
-    CreationDateX: boolean,
-    Type: number,
-    TypeX: boolean,
-    Reason: string,
-    ReasonX: boolean,
-    _ValidateDate:boolean,
-    CreationDateState:"Error"|"Information"|"None"|"Success"|"Warning",
-    ReasonState:"Error"|"Information"|"None"|"Success"|"Warning"
+    index: number,
+    IncidenceId?: number,
+    SapId?: string,
+    EmployeeId?: string,
+    CreationDate?: Date,
+    CreationDateX?: boolean,
+    Type?: number,
+    TypeX?: boolean,
+    Reason?: string,
+    ReasonX?: boolean,
+    _ValidateDate: boolean,
+    CreationDateState?: "Error" | "Information" | "None" | "Success" | "Warning",
+    ReasonState?: "Error" | "Information" | "None" | "Success" | "Warning",
+    EnabledSave: boolean,
+    EnabledDelete: boolean
 }
 
 export default class Main extends Controller {
@@ -139,7 +143,8 @@ export default class Main extends Controller {
 
             incidenceModelCreate.create("/IncidentsSet", body, {
                 success: () => {
-                    MessageToast.show(oResourceModel.getText("odataSavedOK") || "");
+                    // MessageToast.show(oResourceModel.getText("odataSavedOK") || "");
+                    MessageBox.success(oResourceModel.getText("odataSavedOK") || "");
                     this.onReadODataIncidence(employeeId.toString());
                 },
                 error: function (e: any) {
@@ -164,7 +169,8 @@ export default class Main extends Controller {
             debugger;
             incidenceModelUpdate.update(updRoute, body, {
                 success: () => {
-                    MessageToast.show(oResourceModel.getText("odataUpdateOK") || "");
+                    // MessageToast.show(oResourceModel.getText("odataUpdateOK") || "");
+                    MessageBox.success(oResourceModel.getText("odataUpdateOK") || "");
                     this.onReadODataIncidence(employeeId.toString());
                 },
                 error: function (e: any) {
@@ -193,6 +199,8 @@ export default class Main extends Controller {
                 debugger;
                 data.results.forEach((incidence: any, index: number) => {
                     incidence._ValidateDate = true;
+                    incidence.EnabledSave = false;
+                    incidence.EnabledDelete = true;
                     Fragment.load({
                         name: "logaligroup.logali.fragment.NewIncidence",
                         controller: this._detailEmployeeView?.getController()

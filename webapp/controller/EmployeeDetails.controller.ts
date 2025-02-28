@@ -21,18 +21,21 @@ import { TextDirection } from "sap/ui/core/library";
  * @namespace logaligroup.logali.controller
  */
 interface Incidence {
-    IncidenceId: number,
-    SapId: string,
-    EmployeeId: string,
-    CreationDate: Date,
-    CreationDateX: boolean,
-    Type: number,
-    TypeX: boolean,
-    Reason: string,
-    ReasonX: boolean,
+    index: number,
+    IncidenceId?: number,
+    SapId?: string,
+    EmployeeId?: string,
+    CreationDate?: Date,
+    CreationDateX?: boolean,
+    Type?: number,
+    TypeX?: boolean,
+    Reason?: string,
+    ReasonX?: boolean,
     _ValidateDate: boolean,
-    CreationDateState: "Error" | "Information" | "None" | "Success" | "Warning",
-    ReasonState: "Error" | "Information" | "None" | "Success" | "Warning"
+    CreationDateState?: "Error" | "Information" | "None" | "Success" | "Warning",
+    ReasonState?: "Error" | "Information" | "None" | "Success" | "Warning",
+    EnabledSave: boolean,
+    EnabledDelete: boolean
 }
 
 export default class EmployeeDetails extends Controller {
@@ -46,10 +49,12 @@ export default class EmployeeDetails extends Controller {
     public onCreateIncidence(): void {
         const oTableIncidence: Panel = this.getView()?.byId("tableIncidence") as Panel;
         const incidenceModel: JSONModel = this.getView()?.getModel("incidenceModel") as JSONModel;
-        const oData: { index: number, date?: Date, status?: number, _ValidateDate: boolean }[]
-            = incidenceModel.getData() as { index: number, date?: Date, status?: number, _ValidateDate: boolean }[];
+        const oData:
+            Incidence[]
+            = incidenceModel.getData() as
+            Incidence[];
         const index: number = oData.length;
-        oData.push({ index: index + 1, _ValidateDate: false });
+        oData.push({ index: index + 1, _ValidateDate: false, EnabledSave: false, EnabledDelete: false });
         Fragment.load({
             name: "logaligroup.logali.fragment.NewIncidence",
             controller: this
@@ -64,14 +69,28 @@ export default class EmployeeDetails extends Controller {
     }
 
     public onDeleteIncidence(oEvent: Icon$PressEvent): void {
+        const oResourceModel = <ResourceBundle>(
+            (<ResourceModel>(
+                this.getOwnerComponent()?.getModel("i18n")
+            ))?.getResourceBundle()
+        );
+
         const incidence = oEvent.getSource();
         const oContext: Context = incidence?.getBindingContext("incidenceModel") as Context;
         const oContextObj: Incidence = oContext.getObject() as Incidence;
-        this._bus.publish("incidence", "onDeleteIncidence", {
-            IncidenceId: oContextObj.IncidenceId,
-            SapId: oContextObj.SapId,
-            EmployeeId: oContextObj.EmployeeId
-        });
+        MessageBox.confirm(oResourceModel.getText("confirmDeleteIncidence") || "",
+            {
+                onClose:(oAction:"OK"|"CANCEL") => {
+                    if (oAction === 'OK') {
+                        this._bus.publish("incidence", "onDeleteIncidence", {
+                            IncidenceId: oContextObj.IncidenceId,
+                            SapId: oContextObj.SapId,
+                            EmployeeId: oContextObj.EmployeeId
+                        });
+                    }
+                }
+            });
+
         // 
         // Code to delete just locally
         // const rowIncidence = oEvent.getSource().getParent()?.getParent();
@@ -127,13 +146,21 @@ export default class EmployeeDetails extends Controller {
             );
             oContextObj._ValidateDate = false;
             oContextObj.CreationDateState = "Error";
-            MessageBox.error(oResourceModel.getText("errorCreationDateValue")||"", {
-                title : oResourceModel.getText("errorTitle"),
+            MessageBox.error(oResourceModel.getText("errorCreationDateValue") || "", {
+                title: oResourceModel.getText("errorTitle"),
                 styleClass: "",
-                actions : MessageBox.Action.CLOSE,
+                actions: MessageBox.Action.CLOSE,
                 textDirection: TextDirection.Inherit
             });
         }
+
+        if (oEvent.getSource().isValidValue() && oContextObj.Reason != '') {
+            oContextObj.EnabledSave = true;
+        }
+        else {
+            oContextObj.EnabledSave = false;
+        }
+
         oContext.getModel().refresh();
     }
 
@@ -148,6 +175,12 @@ export default class EmployeeDetails extends Controller {
         else {
             oContextObj.ReasonState = "Error";
         }
+        if (oEvent.getSource().getValue() && oContextObj._ValidateDate) {
+            oContextObj.EnabledSave = true;
+        }
+        else {
+            oContextObj.EnabledSave = false;
+        }
         oContext.getModel().refresh();
 
     }
@@ -157,5 +190,12 @@ export default class EmployeeDetails extends Controller {
         const oContext: Context = incidence?.getBindingContext("incidenceModel") as Context;
         const oContextObj: Incidence = oContext.getObject() as Incidence;
         oContextObj.TypeX = true;
+        if (oContextObj.Reason && oContextObj._ValidateDate) {
+            oContextObj.EnabledSave = true;
+        }
+        else {
+            oContextObj.EnabledSave = false;
+        }
+        oContext.getModel().refresh();
     }
 }
