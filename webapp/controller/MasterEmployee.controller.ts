@@ -18,8 +18,9 @@ import { Icon$PressEvent } from "sap/ui/core/Icon";
 import Fragment from "sap/ui/core/Fragment";
 import Dialog from "sap/m/Dialog";
 import EventBus from "sap/ui/core/EventBus";
- import formatter from "../model/formatter";
-
+import formatter from "../model/formatter";
+import { ActionItem$PressEvent } from "sap/m/table/columnmenu/ActionItem";
+import UIComponent from "sap/ui/core/UIComponent";
 
 /**
  * @namespace logaligroup.logali.controller
@@ -137,6 +138,16 @@ export default class MasterEmployee extends Controller {
       const sPath: string = oContext.getPath().toString();
       this._bus.publish("flexible", "showEmployee", { path: sPath });
 
+   }
+
+   public toOrderDetails(oEvent: ActionItem$PressEvent): void | undefined {
+      const orderID = oEvent.getSource()?.getBindingContext("odataNorthwind")?.getObject()?.OrderID;
+      const oRouter = UIComponent.getRouterFor(this);
+      oRouter.navTo("RouteOrderDetails",
+         {
+            OrderID : orderID
+         }
+      );
    }
 
    // public showOrders(oEvent: Event): void {

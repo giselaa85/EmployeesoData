@@ -130,16 +130,27 @@
                     "target": [
                         "TargetMain"
                     ]
+                },
+                {
+                    "name": "RouteOrderDetails",
+                    "pattern": "OrderDetails/{OrderID}",
+                    "target": [
+                        "TargetOrderDetails"
+                    ]
                 }
             ],
             "targets": {
                 "TargetMain": {
                     "id": "Main",
-                    "name": "Main"
+                    "name": "Main",
+                    "viewType": "XML",
+                    "transition": "flip",
+                    "clearControlAggregation": false
                 },
-                "TargetMasterEmployee": {
-                    "id": "MasterEmployee",
-                    "name": "MasterEmployee"
+                "TargetOrderDetails": {
+                    "id": "OrderDetails",
+                    "name": "OrderDetails",
+                    "viewType": "XML"
                 }
             }
         }

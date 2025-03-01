@@ -16,6 +16,8 @@ import MessageBox from "sap/m/MessageBox";
 import ResourceBundle from "sap/base/i18n/ResourceBundle";
 import ResourceModel from "sap/ui/model/resource/ResourceModel";
 import { TextDirection } from "sap/ui/core/library";
+import { ActionItem$PressEvent } from "sap/m/table/columnmenu/ActionItem";
+import UIComponent from "sap/ui/core/UIComponent";
 
 /**
  * @namespace logaligroup.logali.controller
@@ -80,7 +82,7 @@ export default class EmployeeDetails extends Controller {
         const oContextObj: Incidence = oContext.getObject() as Incidence;
         MessageBox.confirm(oResourceModel.getText("confirmDeleteIncidence") || "",
             {
-                onClose:(oAction:"OK"|"CANCEL") => {
+                onClose: (oAction: "OK" | "CANCEL") => {
                     if (oAction === 'OK') {
                         this._bus.publish("incidence", "onDeleteIncidence", {
                             IncidenceId: oContextObj.IncidenceId,
@@ -197,5 +199,16 @@ export default class EmployeeDetails extends Controller {
             oContextObj.EnabledSave = false;
         }
         oContext.getModel().refresh();
+    }
+
+    public toOrderDetails(oEvent: ActionItem$PressEvent): void | undefined {
+        const orderID = oEvent.getSource()?.getBindingContext("odataNorthwind")?.getProperty("OrderID")
+        const oRouter = UIComponent.getRouterFor(this);
+        debugger;
+        oRouter.navTo("RouteOrderDetails",
+            {
+                OrderID: orderID
+            }
+        )
     }
 }

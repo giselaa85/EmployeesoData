@@ -15,7 +15,6 @@ import Fragment from "sap/ui/core/Fragment";
 import Control from "sap/ui/core/Control";
 import MessageBox from "sap/m/MessageBox";
 
-
 /**
  * @namespace logaligroup.logali.controller
  */
