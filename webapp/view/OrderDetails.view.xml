@@ -4,6 +4,7 @@
     xmlns="sap.m"
     xmlns:l="sap.ui.layout"
     xmlns:f="sap.ui.layout.form"
+    xmlns:sc="logaligroup.logali.control"
     displayBlock="true"
 >
     <Page>
@@ -72,6 +73,10 @@
                             </f:FormContainer>
                         </f:formContainers>
                     </f:Form>
+                    <FlexBox class="sapUiTinyMarginTop">
+                        <sc:Signature id="signature" />
+                        <Button text="{i18n>clear}" press="onClearSignature" class="sapUiTinyMarginBegin"/>
+                    </FlexBox>
                 </l:Grid>
             </Panel>
         </content>
