@@ -1,8 +1,23 @@
 import Control from "sap/ui/core/Control";
 import RenderManager from "sap/ui/core/RenderManager";
 import { MetadataOptions } from "sap/ui/core/Element";
-import SignaturePad from "../libs/signature_pad/signature_pad";
-//https://github.com/szimek/signature_pad/tree/master
+import SignaturePad from "signature_pad";
+// https://www.npmjs.com/package/ui5-tooling-modules
+// npm install ui5-tooling-modules --save-dev
+// npm install --save-dev signature_pad
+//Agregar en el archivo ui5.yaml
+// customMiddleware:
+// - name: ui5-tooling-modules-middleware       Agregar esta línea
+//   afterMiddleware: compression               Agregar esta línea 
+// - name: fiori-tools-proxy
+//   afterMiddleware: ui5-tooling-modules-middleware  Cambiar esta línea
+//
+// builder:
+//   customTasks:
+//     - name: ui5-tooling-modules-task     Agregar esta línea
+//       afterTask: replaceVersion          Agregar esta línea
+//     - name: ui5-tooling-transpile-task
+//       afterTask: replaceVersion
 /**
  * @namespace logaligroup.logali.control
  */
