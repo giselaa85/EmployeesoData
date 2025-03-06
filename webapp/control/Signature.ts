@@ -75,7 +75,6 @@ export default class Signature extends Control {
         apiVersion: 4,
         render: (oRm: RenderManager, oControl: Signature) => {
             oRm.openStart("div", oControl);
-            oRm.openEnd();
             oRm.style("width", oControl.getProperty("width"));
             oRm.style("height", oControl.getProperty("height"));
             oRm.style("background-color", oControl.getProperty("bgcolor"));
@@ -83,7 +82,6 @@ export default class Signature extends Control {
             oRm.openEnd();
 
             oRm.openStart("canvas", oControl);
-            oRm.openEnd();
             oRm.style("width", oControl.getProperty("width"));
             oRm.style("height", oControl.getProperty("height"));
             oRm.openEnd();

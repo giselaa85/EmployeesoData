@@ -75,9 +75,22 @@
                     </f:Form>
                     <FlexBox class="sapUiTinyMarginTop">
                         <sc:Signature id="signature" />
-                        <Button text="{i18n>clear}" press="onClearSignature" class="sapUiTinyMarginBegin"/>
+                        <Button
+                            text="{i18n>clear}"
+                            press="onClearSignature"
+                            class="sapUiTinyMarginBegin"
+                        />
                     </FlexBox>
                 </l:Grid>
+            </Panel>
+            <Panel headerText="{i18n>orderProducts}">
+                <List
+                    items="{
+                        path:'odataNorthwind>Order_Details', 
+                        parameters: { expand: 'Product' },
+                        factory: '.factoryOrderDetails'
+                        }"
+                />
             </Panel>
         </content>
     </Page>
