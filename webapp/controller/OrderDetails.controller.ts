@@ -29,6 +29,9 @@ export default class App extends Controller {
 
     private _onObjectMatched(oEvent:Route$PatternMatchedEvent){
         const args = oEvent.getParameter("arguments") as any;
+        //Clear signature every time it is navigated to Detail View        
+        const oSignature:Signature    = this.getView()?.byId("signature") as Signature;
+        oSignature.clear();
         this.getView()?.bindElement({
             path: "/Orders(" + args.OrderID + ")",
             model: "odataNorthwind"

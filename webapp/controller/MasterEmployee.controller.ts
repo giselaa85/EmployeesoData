@@ -1,6 +1,7 @@
 /* eslint-disable no-console */
 /* eslint-disable max-statements */
-import Controller from "sap/ui/core/mvc/Controller";
+// import Controller from "sap/ui/core/mvc/Controller";
+import Base from "logaligroup/logali/controller/Base.controller";
 import Input from "sap/m/Input";
 import Label from "sap/m/Label";
 import JSONModel from "sap/ui/model/json/JSONModel";
@@ -19,13 +20,13 @@ import Fragment from "sap/ui/core/Fragment";
 import Dialog from "sap/m/Dialog";
 import EventBus from "sap/ui/core/EventBus";
 import formatter from "../model/formatter";
-import { ActionItem$PressEvent } from "sap/m/table/columnmenu/ActionItem";
-import UIComponent from "sap/ui/core/UIComponent";
+// import { ActionItem$PressEvent } from "sap/m/table/columnmenu/ActionItem";
+// import UIComponent from "sap/ui/core/UIComponent";
 
 /**
  * @namespace logaligroup.logali.controller
  */
-export default class MasterEmployee extends Controller {
+export default class MasterEmployee extends Base {
    public formatter = formatter;
    private _oDialogOrders: Dialog;
    private _bus: EventBus;
@@ -140,15 +141,15 @@ export default class MasterEmployee extends Controller {
 
    }
 
-   public toOrderDetails(oEvent: ActionItem$PressEvent): void | undefined {
-      const orderID = oEvent.getSource()?.getBindingContext("odataNorthwind")?.getObject()?.OrderID;
-      const oRouter = UIComponent.getRouterFor(this);
-      oRouter.navTo("RouteOrderDetails",
-         {
-            OrderID : orderID
-         }
-      );
-   }
+   // public toOrderDetails(oEvent: ActionItem$PressEvent): void | undefined {
+   //    const orderID = oEvent.getSource()?.getBindingContext("odataNorthwind")?.getObject()?.OrderID;
+   //    const oRouter = UIComponent.getRouterFor(this);
+   //    oRouter.navTo("RouteOrderDetails",
+   //       {
+   //          OrderID : orderID
+   //       }
+   //    );
+   // }
 
    // public showOrders(oEvent: Event): void {
    //    const ordersTable = this.getView()?.byId("ordersTable") as HBox;

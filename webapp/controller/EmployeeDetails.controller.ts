@@ -1,5 +1,6 @@
 /* eslint-disable no-console */
-import Controller from "sap/ui/core/mvc/Controller";
+// import Controller from "sap/ui/core/mvc/Controller";
+import Base from "logaligroup/logali/controller/Base.controller";
 import Panel from "sap/m/Panel";
 import Fragment from "sap/ui/core/Fragment";
 import JSONModel from "sap/ui/model/json/JSONModel";
@@ -9,15 +10,15 @@ import { Icon$PressEvent } from "sap/ui/core/Icon";
 import Context from "sap/ui/model/Context";
 import EventBus from "sap/ui/core/EventBus";
 import { DatePicker$ChangeEvent } from "sap/m/DatePicker";
-import { TextField$ChangeEvent } from "sap/ui/commons/TextField";
+// import { TextField$ChangeEvent } from "sap/ui/commons/TextField";
 import { InputBase$ChangeEvent } from "sap/m/InputBase";
 import { Select$ChangeEvent } from "sap/m/Select";
 import MessageBox from "sap/m/MessageBox";
 import ResourceBundle from "sap/base/i18n/ResourceBundle";
 import ResourceModel from "sap/ui/model/resource/ResourceModel";
 import { TextDirection } from "sap/ui/core/library";
-import { ActionItem$PressEvent } from "sap/m/table/columnmenu/ActionItem";
-import UIComponent from "sap/ui/core/UIComponent";
+// import { ActionItem$PressEvent } from "sap/m/table/columnmenu/ActionItem";
+// import UIComponent from "sap/ui/core/UIComponent";
 
 /**
  * @namespace logaligroup.logali.controller
@@ -40,7 +41,7 @@ interface Incidence {
     EnabledDelete: boolean
 }
 
-export default class EmployeeDetails extends Controller {
+export default class EmployeeDetails extends Base {
     public formatter = formatter;
     private _bus: EventBus;
 
@@ -201,14 +202,14 @@ export default class EmployeeDetails extends Controller {
         oContext.getModel().refresh();
     }
 
-    public toOrderDetails(oEvent: ActionItem$PressEvent): void | undefined {
-        const orderID = oEvent.getSource()?.getBindingContext("odataNorthwind")?.getProperty("OrderID")
-        const oRouter = UIComponent.getRouterFor(this);
-        debugger;
-        oRouter.navTo("RouteOrderDetails",
-            {
-                OrderID: orderID
-            }
-        )
-    }
+    // public toOrderDetails(oEvent: ActionItem$PressEvent): void | undefined {
+    //     const orderID = oEvent.getSource()?.getBindingContext("odataNorthwind")?.getProperty("OrderID")
+    //     const oRouter = UIComponent.getRouterFor(this);
+    //     debugger;
+    //     oRouter.navTo("RouteOrderDetails",
+    //         {
+    //             OrderID: orderID
+    //         }
+    //     )
+    // }
 }
