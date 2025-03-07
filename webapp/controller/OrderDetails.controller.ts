@@ -10,6 +10,12 @@ import CustomListItem from "sap/m/CustomListItem";
 import Bar from "sap/m/Bar";
 import Label from "sap/m/Label";
 import ObjectStatus from "sap/m/ObjectStatus";
+import ResourceBundle from "sap/base/i18n/ResourceBundle";
+import ResourceModel from "sap/ui/model/resource/ResourceModel";
+import MessageBox from "sap/m/MessageBox";
+import JSONModel from "sap/ui/model/json/JSONModel";
+import ODataModel from "sap/ui/model/odata/v2/ODataModel";
+import Component from "../Component";
 
 /**
  * @namespace logaligroup.logali.controller
@@ -62,19 +68,53 @@ export default class App extends Controller {
             return objectListItem;
         }
         else {
-            const customListItem = new CustomListItem ({
+            const customListItem = new CustomListItem({
                 content: [
                     new Bar({
-                        contentLeft: new Label({ text:"{odataNorthwind>/Products(" + contextObject.ProductID + ")/ProductName} ({odataNorthwind>Quantity})"}),
-                        contentMiddle: new ObjectStatus({text:"{i18n>availableStock} {odataNorthwind>/Products(" + contextObject.ProductID + ")/UnitsInStock}",state: "Error"}),
-                        contentRight: new  Label({ text:"{parts: [{path: 'odataNorthwind>UnitPrice'},{path: 'odataNorthwind>Currency'}], type:'sap.ui.model.type.Currency'}"})
+                        contentLeft: new Label({ text: "{odataNorthwind>/Products(" + contextObject.ProductID + ")/ProductName} ({odataNorthwind>Quantity})" }),
+                        contentMiddle: new ObjectStatus({ text: "{i18n>availableStock} {odataNorthwind>/Products(" + contextObject.ProductID + ")/UnitsInStock}", state: "Error" }),
+                        contentRight: new Label({ text: "{parts: [{path: 'odataNorthwind>UnitPrice'},{path: 'odataNorthwind>Currency'}], type:'sap.ui.model.type.Currency'}" })
                     })
                 ]
-                
+
             });
             return customListItem;
         }
 
+    }
+
+    public onSaveSignature(oEvent: Button$PressEvent): void {
+        debugger;
+        const oSignature: Signature = this.getView()?.byId("signature") as Signature;
+               const oResourceModel = <ResourceBundle>(
+                   (<ResourceModel>(
+                       this.getOwnerComponent()?.getModel("i18n")
+                   ))?.getResourceBundle()
+               );
+        let signaturePng:string;
+        if(! oSignature.isFill() ){
+            MessageBox.error(oResourceModel.getText("fillSignature") || "Please Sign the Order");
+        }
+        else {
+            signaturePng = oSignature.getSignature().replace("data:image/png;base64,","");
+            let objectOrder = oEvent.getSource().getBindingContext("odataNorthwind")?.getObject();
+            let body = {
+                OrderId : oEvent.getSource()?.getBindingContext("odataNorthwind")?.getProperty("OrderID").toString(),
+                SapId : Component.SapId,
+                EmployeeId : oEvent.getSource()?.getBindingContext("odataNorthwind")?.getProperty("EmployeeID").toString(),
+                MimeType : "image/png",
+                MediaContent: signaturePng
+            };
+            const incidenceModel: ODataModel = this.getView()?.getModel("incidenceModel") as ODataModel;
+            incidenceModel.create("/SignatureSet", body, {
+                success: () => {
+                    MessageBox.information(oResourceModel.getText("signatureSaved") || "Signature successfully saved.");
+                },
+                error: () => {
+                    MessageBox.error(oResourceModel.getText("signatureNotSaved") || "Signature not Saved");
+                }
+            });
+        } 
     }
 
 }

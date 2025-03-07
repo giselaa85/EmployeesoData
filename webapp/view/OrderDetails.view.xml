@@ -93,5 +93,11 @@
                 />
             </Panel>
         </content>
+        <footer>
+            <Toolbar>
+                <ToolbarSpacer />
+                <Button text="{i18n>saveSignature}" press="onSaveSignature"/>
+            </Toolbar>
+        </footer>
     </Page>
 </mvc:View>

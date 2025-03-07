@@ -55,35 +55,66 @@ export default class Signature extends Control {
     }
 
     private _signaturePad:SignaturePad ;
+    private _signaturePadfill:boolean;
 
     public onAfterRendering(oEvent: jQuery.Event): void | undefined {
         const oCanvas:HTMLCanvasElement = document.querySelector("canvas") as HTMLCanvasElement;
+        if (!oCanvas) {
+            console.error("Canvas element not found.");
+            return;
+        }
+       
+        this._signaturePadfill = false;
+        oCanvas.addEventListener("pointerdown", () => {
+            this._signaturePadfill = true;
+        });
+
+        oCanvas.addEventListener("mousedown", () => {
+            debugger;
+            this._signaturePadfill = true;
+        });        
+       
         try {
             this._signaturePad = new SignaturePad(oCanvas);
         } catch (error) {
             console.error(error);
         }
        
-
     }
 
     public clear():void{
         this._signaturePad.clear();
+        this._signaturePadfill = false;
+    }
+
+    public isFill():boolean{
+        debugger;
+        return  this._signaturePadfill;
+    }
+
+    public getSignature():string{
+        return this._signaturePad.toDataURL();
+    }
+
+    public setSignature(signature:string){
+        this._signaturePad.fromDataURL(signature);
     }
 
     renderer = {
         apiVersion: 4,
         render: (oRm: RenderManager, oControl: Signature) => {
             oRm.openStart("div", oControl);
-            oRm.style("width", oControl.getProperty("width"));
-            oRm.style("height", oControl.getProperty("height"));
+            // oRm.style("width", oControl.getProperty("width"));
+            // oRm.style("height", oControl.getProperty("height"));
             oRm.style("background-color", oControl.getProperty("bgcolor"));
             oRm.style("border", "1px solid black");
+            oRm.style("class", "wrapper");
             oRm.openEnd();
 
             oRm.openStart("canvas", oControl);
-            oRm.style("width", oControl.getProperty("width"));
-            oRm.style("height", oControl.getProperty("height"));
+            // oRm.style("width", oControl.getProperty("width"));
+            // oRm.style("height", oControl.getProperty("height"));
+            oRm.style("class", "signature-pad");
             oRm.openEnd();
             oRm.close("canvas");
             oRm.close("div");
