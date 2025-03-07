@@ -1,10 +1,12 @@
 import Control from "sap/ui/core/Control";
 import RenderManager from "sap/ui/core/RenderManager";
-import { MetadataOptions } from "sap/ui/core/Element";
+// import { MetadataOptions } from "sap/ui/core/Element";
 import SignaturePad from "signature_pad";
+
 // https://www.npmjs.com/package/ui5-tooling-modules
 // npm install ui5-tooling-modules --save-dev
 // npm install --save-dev signature_pad
+// https://github.com/szimek/signature_pad?tab=readme-ov-file
 //Agregar en el archivo ui5.yaml
 // customMiddleware:
 // - name: ui5-tooling-modules-middleware       Agregar esta línea
@@ -18,6 +20,7 @@ import SignaturePad from "signature_pad";
 //       afterTask: replaceVersion          Agregar esta línea
 //     - name: ui5-tooling-transpile-task
 //       afterTask: replaceVersion
+
 /**
  * @namespace logaligroup.logali.control
  */
@@ -37,33 +40,44 @@ import SignaturePad from "signature_pad";
 
 export default class Signature extends Control {
 
-    private metadata: MetadataOptions = {
-        properties: {
-            "width" : {
-                type: "sap.ui.core.CSSSize",
-                defaultValue: "400px"
-            },
-            "height" : {
-                type: "sap.ui.core.CSSSize",
-                defaultValue: "100px"
-            },
-            "bgcolor" : {
-                type: "sap.ui.core.CSSColor",
-                defaultValue: "white"
-            }
-        }
+    // private metadata: MetadataOptions = {
+    //     properties: {
+    //         "width" : {
+    //             type: "sap.ui.core.CSSSize",
+    //             defaultValue: 400
+    //         },
+    //         "height" : {
+    //             type: "sap.ui.core.CSSSize",
+    //             defaultValue: 100
+    //         },
+    //         "bgcolor" : {
+    //             type: "sap.ui.core.CSSColor",
+    //             defaultValue: "white"
+    //         }
+    //     }
+    // }
+    
+    private properties = {
+        "width": 400,
+        "height": 100,
+        "bgcolor": "rgb(255, 255, 255)",
+        "minWidth": 2,
+        "maxWidth": 3,
+        "penColor": "rgb(4, 31, 75)"
     }
 
-    private _signaturePad:SignaturePad ;
-    private _signaturePadfill:boolean;
+    private _signaturePad: SignaturePad;
+    private _signaturePadfill: boolean;
 
     public onAfterRendering(oEvent: jQuery.Event): void | undefined {
-        const oCanvas:HTMLCanvasElement = document.querySelector("canvas") as HTMLCanvasElement;
+        const oCanvas: HTMLCanvasElement = document.querySelector("canvas") as HTMLCanvasElement;
         if (!oCanvas) {
             console.error("Canvas element not found.");
             return;
         }
-       
+        oCanvas.width = this.properties.width;
+        oCanvas.height = this.properties.height;
+
         this._signaturePadfill = false;
         oCanvas.addEventListener("pointerdown", () => {
             this._signaturePadfill = true;
@@ -72,31 +86,35 @@ export default class Signature extends Control {
         oCanvas.addEventListener("mousedown", () => {
             debugger;
             this._signaturePadfill = true;
-        });        
-       
+        });
+
         try {
             this._signaturePad = new SignaturePad(oCanvas);
+            this._signaturePad.minWidth = this.properties.minWidth;
+            this._signaturePad.maxWidth = this.properties.maxWidth;
+            this._signaturePad.penColor = this.properties.penColor;
+            this._signaturePad.backgroundColor = this.properties.bgcolor;
         } catch (error) {
             console.error(error);
         }
-       
+
     }
 
-    public clear():void{
+    public clear(): void {
         this._signaturePad.clear();
         this._signaturePadfill = false;
     }
 
-    public isFill():boolean{
+    public isFill(): boolean {
         debugger;
-        return  this._signaturePadfill;
+        return this._signaturePadfill;
     }
 
-    public getSignature():string{
+    public getSignature(): string {
         return this._signaturePad.toDataURL();
     }
 
-    public setSignature(signature:string){
+    public setSignature(signature: string) {
         this._signaturePad.fromDataURL(signature);
     }
 
@@ -104,17 +122,15 @@ export default class Signature extends Control {
         apiVersion: 4,
         render: (oRm: RenderManager, oControl: Signature) => {
             oRm.openStart("div", oControl);
-            // oRm.style("width", oControl.getProperty("width"));
-            // oRm.style("height", oControl.getProperty("height"));
-            oRm.style("background-color", oControl.getProperty("bgcolor"));
-            oRm.style("border", "1px solid black");
-            oRm.style("class", "wrapper");
+            // oRm.style("minwidth", oControl.getProperty("width"));
+            // oRm.style("minheight", oControl.getProperty("height"));
+            // oRm.style("background-color", oControl.getProperty("bgcolor"));
+            // oRm.style("border", "1px solid black");
             oRm.openEnd();
 
             oRm.openStart("canvas", oControl);
-            // oRm.style("width", oControl.getProperty("width"));
-            // oRm.style("height", oControl.getProperty("height"));
-            oRm.style("class", "signature-pad");
+            // oRm.style("minwidth", oControl.getProperty("width"));
+            // oRm.style("minheight", oControl.getProperty("height"));
             oRm.openEnd();
             oRm.close("canvas");
             oRm.close("div");
