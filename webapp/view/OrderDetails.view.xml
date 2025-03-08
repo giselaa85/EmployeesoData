@@ -1,4 +1,5 @@
 <mvc:View
+    xmlns:unified="sap.ui.unified"
     controllerName="logaligroup.logali.controller.OrderDetails"
     xmlns:mvc="sap.ui.core.mvc"
     xmlns="sap.m"
@@ -82,6 +83,20 @@
                         />
                     </FlexBox>
                 </l:Grid>
+                <!-- https://ui5.sap.com/1.132.1/#/entity/sap.m.plugins.UploadSetwithTable/sample/sap.m.sample.UploadSetwithTablePlugin.ResponsiveTableSimple/code -->
+                <UploadCollection
+                    id="uploadCollection"
+                    maximumFilenameLength="55"
+                    maximumFileSize="10"
+                    multiple="true"
+                    sameFilenameAllowed="true"
+                    instantUpload="true"
+                    uploadUrl="sap/opu/odata/sap/YSAPUI5_SRV_01/FilesSet"
+                    change="onFileChange"
+                    uploadComplete="onFileUploadComplete"
+                    beforeUploadStarts="onFileBeforeUpload"
+                    fileDeleted="onFileDeleted"
+                />
             </Panel>
             <Panel headerText="{i18n>orderProducts}">
                 <List
@@ -96,7 +111,10 @@
         <footer>
             <Toolbar>
                 <ToolbarSpacer />
-                <Button text="{i18n>saveSignature}" press="onSaveSignature"/>
+                <Button
+                    text="{i18n>saveSignature}"
+                    press="onSaveSignature"
+                />
             </Toolbar>
         </footer>
     </Page>

@@ -61,6 +61,7 @@ export default class App extends Controller {
     }
 
     public _readSignature(OrderID: number, EmployeeID: number): void {
+        // http://erp13.sap4practice.com:9037/sap/opu/odata/sap/YSAPUI5_SRV_01/SignatureSet/?$format=json        
         const oModel = this.getOwnerComponent()?.getModel("incidenceModel") as ODataModel;
 
         oModel?.read("/SignatureSet(OrderId='" + OrderID
