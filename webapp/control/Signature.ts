@@ -77,6 +77,7 @@ export default class Signature extends Control {
         }
         oCanvas.width = this.properties.width;
         oCanvas.height = this.properties.height;
+        oCanvas.style.backgroundColor = this.properties.bgcolor;
 
         this._signaturePadfill = false;
         oCanvas.addEventListener("pointerdown", () => {

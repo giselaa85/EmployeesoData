@@ -13,7 +13,6 @@ import ObjectStatus from "sap/m/ObjectStatus";
 import ResourceBundle from "sap/base/i18n/ResourceBundle";
 import ResourceModel from "sap/ui/model/resource/ResourceModel";
 import MessageBox from "sap/m/MessageBox";
-import JSONModel from "sap/ui/model/json/JSONModel";
 import ODataModel from "sap/ui/model/odata/v2/ODataModel";
 import Component from "../Component";
 
@@ -46,8 +45,38 @@ export default class App extends Controller {
         oSignature.clear();
         this.getView()?.bindElement({
             path: "/Orders(" + args.OrderID + ")",
-            model: "odataNorthwind"
-        })
+            model: "odataNorthwind",
+            events: {
+                dataReceived: (oData: any) => {
+                    this._readSignature.bind(this)(oData.getParameter("data").OrderID, (oData.getParameter("data").EmployeeID));
+                }
+            }
+        });
+        // debugger;
+        // const oView: View = this.getView() as View;
+        // const oModel = oView.getModel("odataNorthwind") as ODataModel;
+        // const oContext = oModel.getProperty("/Orders(" + args.OrderID + ")");
+        // this._readSignature.bind(this)(oContext.OrderID, oContext.EmployeeID);
+
+    }
+
+    public _readSignature(OrderID: number, EmployeeID: number): void {
+        const oModel = this.getOwnerComponent()?.getModel("incidenceModel") as ODataModel;
+
+        oModel?.read("/SignatureSet(OrderId='" + OrderID
+            + "',SapId='" + Component.SapId
+            + "',EmployeeId='" + EmployeeID + "')", {
+            success: (data: any) => {
+                const signature = this.getView()?.byId("signature") as Signature;
+                if (data.MediaContent !== "") {
+                    signature.setSignature("data:image/png;base64," + data.MediaContent);
+                }
+            },
+            error: (data: any) => {
+                console.error(data.responseText);
+            }
+        });
+
     }
 
     public onClearSignature(): void {
@@ -86,23 +115,23 @@ export default class App extends Controller {
     public onSaveSignature(oEvent: Button$PressEvent): void {
         debugger;
         const oSignature: Signature = this.getView()?.byId("signature") as Signature;
-               const oResourceModel = <ResourceBundle>(
-                   (<ResourceModel>(
-                       this.getOwnerComponent()?.getModel("i18n")
-                   ))?.getResourceBundle()
-               );
-        let signaturePng:string;
-        if(! oSignature.isFill() ){
+        const oResourceModel = <ResourceBundle>(
+            (<ResourceModel>(
+                this.getOwnerComponent()?.getModel("i18n")
+            ))?.getResourceBundle()
+        );
+        let signaturePng: string;
+        if (!oSignature.isFill()) {
             MessageBox.error(oResourceModel.getText("fillSignature") || "Please Sign the Order");
         }
         else {
-            signaturePng = oSignature.getSignature().replace("data:image/png;base64,","");
+            signaturePng = oSignature.getSignature().replace("data:image/png;base64,", "");
             let objectOrder = oEvent.getSource().getBindingContext("odataNorthwind")?.getObject();
             let body = {
-                OrderId : oEvent.getSource()?.getBindingContext("odataNorthwind")?.getProperty("OrderID").toString(),
-                SapId : Component.SapId,
-                EmployeeId : oEvent.getSource()?.getBindingContext("odataNorthwind")?.getProperty("EmployeeID").toString(),
-                MimeType : "image/png",
+                OrderId: oEvent.getSource()?.getBindingContext("odataNorthwind")?.getProperty("OrderID").toString(),
+                SapId: Component.SapId,
+                EmployeeId: oEvent.getSource()?.getBindingContext("odataNorthwind")?.getProperty("EmployeeID").toString(),
+                MimeType: "image/png",
                 MediaContent: signaturePng
             };
             const incidenceModel: ODataModel = this.getView()?.getModel("incidenceModel") as ODataModel;
@@ -114,7 +143,7 @@ export default class App extends Controller {
                     MessageBox.error(oResourceModel.getText("signatureNotSaved") || "Signature not Saved");
                 }
             });
-        } 
+        }
     }
 
 }
