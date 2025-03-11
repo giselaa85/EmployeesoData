@@ -15,6 +15,14 @@ import ResourceModel from "sap/ui/model/resource/ResourceModel";
 import MessageBox from "sap/m/MessageBox";
 import ODataModel from "sap/ui/model/odata/v2/ODataModel";
 import Component from "../Component";
+import UploadCollectionParameter, 
+  { UploadCollection$BeforeUploadStartsEvent,
+    UploadCollection$ChangeEvent, 
+    UploadCollection$FileDeletedEvent, 
+    UploadCollection$UploadCompleteEvent } from "sap/m/UploadCollection";
+import Filter from "sap/ui/model/Filter";
+import FilterOperator from "sap/ui/model/FilterOperator";
+import UploadCollectionItem, { UploadCollectionItem$PressEvent } from "sap/m/UploadCollectionItem";
 
 /**
  * @namespace logaligroup.logali.controller
@@ -48,7 +56,7 @@ export default class App extends Controller {
             model: "odataNorthwind",
             events: {
                 dataReceived: (oData: any) => {
-                    this._readSignature.bind(this)(oData.getParameter("data").OrderID, (oData.getParameter("data").EmployeeID));
+                    this._readSignatureFiles.bind(this)(oData.getParameter("data").OrderID, (oData.getParameter("data").EmployeeID));
                 }
             }
         });
@@ -60,10 +68,10 @@ export default class App extends Controller {
 
     }
 
-    public _readSignature(OrderID: number, EmployeeID: number): void {
+    public _readSignatureFiles(OrderID: number, EmployeeID: number): void {
         // http://erp13.sap4practice.com:9037/sap/opu/odata/sap/YSAPUI5_SRV_01/SignatureSet/?$format=json        
         const oModel = this.getOwnerComponent()?.getModel("incidenceModel") as ODataModel;
-
+        //Read Signature
         oModel?.read("/SignatureSet(OrderId='" + OrderID
             + "',SapId='" + Component.SapId
             + "',EmployeeId='" + EmployeeID + "')", {
@@ -77,6 +85,22 @@ export default class App extends Controller {
                 console.error(data.responseText);
             }
         });
+
+        //Read Files
+        this.byId("uploadCollection")?.bindAggregation("items",
+            {
+                path: "incidenceModel>/FilesSet",
+                filters: [
+                   new Filter("OrderId",FilterOperator.EQ, OrderID),
+                   new Filter("SapId",FilterOperator.EQ, Component.SapId),
+                   new Filter("EmployeeId", FilterOperator.EQ, EmployeeID),
+                ],
+                template: new UploadCollectionItem({
+                    documentId: "{incidenceModel>AttId}",
+                    fileName: "{incidenceModel>FileName",
+                    visibleEdit:false
+                }).attachPress(this.downloadFile)
+            });
 
     }
 
@@ -147,4 +171,56 @@ export default class App extends Controller {
         }
     }
 
+    public onFileBeforeUpload(oEvent:UploadCollection$BeforeUploadStartsEvent){
+        debugger;
+        const filename:string|void = oEvent.getParameter("fileName")?.toString();
+        interface ObjectContext {
+            OrderID: string;
+            EmployeeID: string;
+        }
+        const objectContext = oEvent.getSource().getBindingContext("odataNorthwind")?.getObject() as ObjectContext;
+        const oCustomerHeaderSlug = new UploadCollectionParameter({
+            name: "slug",
+            value: objectContext?.OrderID + ";" + Component.SapId + ";" + objectContext?.EmployeeID + ";" + filename
+        });
+        const parameters = oEvent.getParameters();
+        if (parameters) {
+            if (parameters && parameters.addHeaderParameter) {
+                parameters.addHeaderParameter(oCustomerHeaderSlug);
+            }
+        }    
+        
+      }
+    
+      public onFileChange(oEvent:UploadCollection$ChangeEvent){
+        const oUploadCollection = oEvent.getSource();
+        const oCustomerHeaderToken:UploadCollectionParameter= new UploadCollectionParameter({
+            name: "x-csrf-token",
+            value: (this.getView()?.getModel("incidenceModel") as ODataModel)?.getSecurityToken()
+        });
+        oUploadCollection.addHeaderParameter(oCustomerHeaderToken);
+     }
+
+     public onFileUploadComplete(oEvent:UploadCollection$UploadCompleteEvent){
+       oEvent.getSource()?.getBinding("items")?.refresh();
+     }
+
+     public onFileDeleted(oEvent: UploadCollection$FileDeletedEvent){
+        const oUploadCollection = oEvent.getSource();
+        const sPath:string= oEvent.getParameter("item")?.getBindingContext("incidenceModel")?.getPath().toString() || "";
+        (this.getView()?.getModel("incidenceModel") as ODataModel).remove(sPath, {
+            success: () => {
+                oUploadCollection.getBinding("items")?.refresh();
+            },
+            error: () => {
+
+            }
+        }
+        )
+     }
+
+     public downloadFile(oEvent:UploadCollectionItem$PressEvent){
+        const sPath:string= oEvent.getSource().getBindingContext("incidenceModel")?.getPath().toString() || "";
+        window.open("/sap/opu/odata/sap/YSAPUI5_SRV_01" + sPath + "/$value")
+     }
 }
